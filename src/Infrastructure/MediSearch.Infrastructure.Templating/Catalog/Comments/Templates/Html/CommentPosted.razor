@@ -1,0 +1,39 @@
+@inject ITextLocalizer T
+@inject AppUrlBuilder UrlBuilder
+
+<EmailLayout Title="@T[CommentPostedTemplateCodes.CommentPostedTitle]">
+    <h1>@T[CommentPostedTemplateCodes.CommentPostedTitle]</h1>
+
+    <p>@T[CommentPostedTemplateCodes.CommentPostedIntro]</p>
+
+    <div class="info-block">
+        <div class="label">@T[SharedTemplateCodes.CompanyLabel]</div>
+        <div class="value">@Model.CompanyName</div>
+    </div>
+
+    <div class="info-block">
+        <div class="label">@T[SharedTemplateCodes.ProductLabel]</div>
+        <div class="value">@Model.ProductName</div>
+    </div>
+
+    <div class="info-block">
+        <div class="label">@T[CommentPostedTemplateCodes.CommentPostedAuthorLabel]</div>
+        <div class="value">@Model.CommentAuthorName</div>
+    </div>
+
+    <div class="info-block">
+        <div class="label">@T[CommentPostedTemplateCodes.CommentPostedCommentLabel]</div>
+        <div class="value">@Model.CommentContent</div>
+    </div>
+
+    <p>@T[CommentPostedTemplateCodes.CommentPostedBody]</p>
+
+    <div class="btn-center">
+        <a href="@UrlBuilder.ClientLoginUrl" class="btn">@T[SharedTemplateCodes.OpenMediSearchButton]</a>
+    </div>
+</EmailLayout>
+
+@code {
+    [Parameter, EditorRequired]
+    public CommentPostedModel Model { get; set; } = default!;
+}

@@ -1,0 +1,15 @@
+﻿{
+  "Domain.Favorites.CompanyFavorites.CompanyCannotFavoriteItself": "Una empresa no puede marcarse a si misma como favorita.",
+  "Application.Favorites.CompanyAddedToFavoritesEmailSubject": "Alguien agrego tu empresa a favoritos",
+  "Application.Favorites.ProductAddedToFavoritesEmailSubject": "Alguien agrego uno de tus productos a favoritos",
+  "Application.Favorites.ProductNotEligibleForFavorite": "Este producto no es elegible para ser agregado a favoritos.",
+  "Application.Favorites.CompanyNotEligibleForFavorite": "Esta empresa no es elegible para ser agregada a favoritos.",
+  "Infrastructure.Favorites.CompanyAddedToFavoritesTitle": "Agregaron tu empresa a favoritos",
+  "Infrastructure.Favorites.CompanyAddedToFavoritesIntro": "Alguien agrego tu empresa a favoritos en MediSearch.",
+  "Infrastructure.Favorites.CompanyAddedToFavoritesFavoriterLabel": "Agregado por",
+  "Infrastructure.Favorites.CompanyAddedToFavoritesBody": "Inicia sesion para seguir interactuando con usuarios y empresas interesadas en tu negocio.",
+  "Infrastructure.Favorites.ProductAddedToFavoritesTitle": "Agregaron uno de tus productos a favoritos",
+  "Infrastructure.Favorites.ProductAddedToFavoritesIntro": "Alguien agrego uno de tus productos a favoritos en MediSearch.",
+  "Infrastructure.Favorites.ProductAddedToFavoritesFavoriterLabel": "Agregado por",
+  "Infrastructure.Favorites.ProductAddedToFavoritesBody": "Inicia sesion para dar seguimiento a usuarios y empresas interesadas en este producto."
+}

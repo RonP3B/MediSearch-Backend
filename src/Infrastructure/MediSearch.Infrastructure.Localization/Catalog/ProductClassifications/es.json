@@ -1,0 +1,11 @@
+﻿{
+  "Domain.Catalog.ProductClassifications.NameTooLong": "El nombre de la clasificación no puede tener más de {MaxLength} caracteres.",
+  "Domain.Catalog.ProductClassifications.NameTooShort": "El nombre de la clasificación debe tener al menos {MinLength} caracteres.",
+  "Domain.Catalog.ProductClassifications.CategoryAlreadyAdded": "La categoría ya está agregada a esta clasificación.",
+  "Domain.Catalog.ProductClassifications.CategoryNotFound": "La categoría especificada no fue encontrada.",
+  "Domain.Catalog.ProductClassifications.CategoryNotInClassification": "La categoría no pertenece a esta clasificación.",
+  "Domain.Catalog.ProductClassifications.CategoryNameAlreadyExists": "Ya existe una categoría con este nombre en la clasificación.",
+  "Application.Catalog.ProductClassifications.ClassificationAlreadyExists": "Ya existe una clasificación de producto con este nombre.",
+  "Application.Catalog.ProductClassifications.CategoryNotInClassification": "La categoría no pertenece a la clasificación de producto especificada.",
+  "Application.Catalog.ProductClassifications.ProductClassificationDoesNotExist": "La clasificación de producto especificada no existe."
+}

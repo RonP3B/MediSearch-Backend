@@ -1,0 +1,24 @@
+@inject ITextLocalizer T
+@inject AppUrlBuilder UrlBuilder
+
+<EmailLayout Title="@T[CompanyOwnerWelcomeTemplateCodes.CompanyOwnerWelcomeTitle]">
+    <h1>@T[SharedTemplateCodes.EmailGreeting], <span class="capitalize-name">@Model.FullName</span> 👋</h1>
+
+    <p>@T[CompanyOwnerWelcomeTemplateCodes.CompanyOwnerWelcomeIntro]</p>
+
+    <div class="info-block">
+        <div class="label">@T[SharedTemplateCodes.CompanyLabel]</div>
+        <div class="value"><span class="capitalize-name">@Model.CompanyName</span></div>
+    </div>
+
+    <p>@T[CompanyOwnerWelcomeTemplateCodes.CompanyOwnerWelcomeBody]</p>
+
+    <div class="btn-center">
+        <a href="@UrlBuilder.ClientLoginUrl" class="btn">@T[SharedTemplateCodes.GoToMediSearchButton]</a>
+    </div>
+</EmailLayout>
+
+@code {
+    [Parameter, EditorRequired]
+    public required CompanyOwnerWelcomeModel Model { get; set; } 
+}

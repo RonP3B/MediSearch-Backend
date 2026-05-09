@@ -1,0 +1,36 @@
+@inject ITextLocalizer T
+@inject AppUrlBuilder UrlBuilder
+
+<EmailLayout Title="@T[CompanyUserWelcomeTemplateCodes.CompanyUserWelcomeTitle]">
+    <h1>@T[SharedTemplateCodes.EmailGreeting], <span class="capitalize-name">@Model.FullName</span> 👋</h1>
+
+    <p>@T[CompanyUserWelcomeTemplateCodes.CompanyUserWelcomeIntro]</p>
+
+    <div class="info-block">
+        <div class="label">@T[SharedTemplateCodes.CompanyLabel]</div>
+        <div class="value">@Model.CompanyName</div>
+    </div>
+
+    <div class="info-block">
+        <div class="label">@T[CompanyUserWelcomeTemplateCodes.CompanyUserWelcomeUsernameLabel]</div>
+        <div class="value">@Model.Username</div>
+    </div>
+
+    <p>@T[CompanyUserWelcomeTemplateCodes.CompanyUserWelcomePasswordNotice]</p>
+
+    <div class="btn-center">
+        <a 
+            href="@UrlBuilder.BuildResetPasswordUrl(Model.ExternalUserId, Model.PasswordResetToken)"
+            class="btn"
+        >@T[CompanyUserWelcomeTemplateCodes.CompanyUserWelcomeSetPasswordButton]</a>
+    </div>
+
+    <hr class="divider" />
+
+    <p class="muted">@T[CompanyUserWelcomeTemplateCodes.CompanyUserWelcomeLinkExpiry]</p>
+</EmailLayout>
+
+@code {
+    [Parameter, EditorRequired]
+    public required CompanyUserWelcomeModel Model { get; set; } 
+}

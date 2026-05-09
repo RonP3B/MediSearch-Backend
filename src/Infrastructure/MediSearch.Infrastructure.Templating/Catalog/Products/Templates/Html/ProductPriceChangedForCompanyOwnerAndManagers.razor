@@ -1,0 +1,38 @@
+@inject ITextLocalizer T
+@inject AppUrlBuilder UrlBuilder
+
+<EmailLayout Title="@T[ProductPriceChangedForCompanyOwnerAndManagersTemplateCodes.ProductPriceChangedForCompanyOwnerAndManagersTitle]">
+    <h1>@T[ProductPriceChangedForCompanyOwnerAndManagersTemplateCodes.ProductPriceChangedForCompanyOwnerAndManagersTitle]</h1>
+
+    <p>@T[ProductPriceChangedForCompanyOwnerAndManagersTemplateCodes.ProductPriceChangedForCompanyOwnerAndManagersIntro]</p>
+
+    <div class="info-block">
+        <div class="label">@T[SharedTemplateCodes.ProductLabel]</div>
+        <div class="value">@Model.ProductName</div>
+    </div>
+
+    <div class="info-block">
+        <div class="label">
+            @T[ProductPriceChangedForCompanyOwnerAndManagersTemplateCodes.ProductPriceChangedForCompanyOwnerAndManagersPreviousPriceLabel]
+         </div>
+        <div class="value">@Model.PreviousPrice</div>
+    </div>
+
+    <div class="info-block">
+        <div class="label">
+            @T[ProductPriceChangedForCompanyOwnerAndManagersTemplateCodes.ProductPriceChangedForCompanyOwnerAndManagersNewPriceLabel]
+        </div>
+        <div class="value">@Model.NewPrice</div>
+    </div>
+
+    <p>@T[ProductPriceChangedForCompanyOwnerAndManagersTemplateCodes.ProductPriceChangedForCompanyOwnerAndManagersBody]</p>
+
+    <div class="btn-center">
+        <a href="@UrlBuilder.ClientLoginUrl" class="btn">@T[SharedTemplateCodes.OpenMediSearchButton]</a>
+    </div>
+</EmailLayout>
+
+@code {
+    [Parameter, EditorRequired]
+    public required ProductPriceChangedForCompanyOwnerAndManagersModel Model { get; set; } 
+}

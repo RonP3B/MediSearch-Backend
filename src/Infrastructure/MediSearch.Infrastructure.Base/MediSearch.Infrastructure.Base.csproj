@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>MediSearch.Infrastructure.Base</RootNamespace>
+    <AssemblyName>MediSearch.Infrastructure.Base</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Ardalis.GuardClauses" />
+    <PackageReference Include="Aspire.StackExchange.Redis.DistributedCaching" />
+    <PackageReference Include="AWSSDK.S3" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
+    <PackageReference Include="Scrutor" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\MediSearch.Core.Application\MediSearch.Core.Application.csproj" />
+    <ProjectReference Include="..\..\Shared\MediSearch.Shared.Constants\MediSearch.Shared.Constants.csproj" />
+    <ProjectReference Include="..\MediSearch.Infrastructure.Communication\MediSearch.Infrastructure.Communication.csproj" />
+    <ProjectReference Include="..\MediSearch.Infrastructure.Localization\MediSearch.Infrastructure.Localization.csproj" />
+    <ProjectReference Include="..\MediSearch.Infrastructure.MessageBus\MediSearch.Infrastructure.MessageBus.csproj" />
+    <ProjectReference Include="..\MediSearch.Infrastructure.Persistence\MediSearch.Infrastructure.Persistence.csproj" />
+    <ProjectReference Include="..\MediSearch.Infrastructure.Security\MediSearch.Infrastructure.Security.csproj" />
+    <ProjectReference Include="..\MediSearch.Infrastructure.Templating\MediSearch.Infrastructure.Templating.csproj" />
+  </ItemGroup>
+</Project>

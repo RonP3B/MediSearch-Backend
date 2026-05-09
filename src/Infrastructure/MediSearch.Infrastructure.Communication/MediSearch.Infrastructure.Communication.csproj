@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>MediSearch.Infrastructure.Communication</RootNamespace>
+    <AssemblyName>MediSearch.Infrastructure.Communication</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Ardalis.GuardClauses" />
+    <PackageReference Include="MailKit" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Resend" />
+    <PackageReference Include="SendGrid" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\MediSearch.Core.Application\MediSearch.Core.Application.csproj" />
+    <ProjectReference Include="..\..\Shared\MediSearch.Shared.Constants\MediSearch.Shared.Constants.csproj" />
+    <ProjectReference Include="..\MediSearch.Infrastructure.Localization\MediSearch.Infrastructure.Localization.csproj" />
+  </ItemGroup>
+</Project>

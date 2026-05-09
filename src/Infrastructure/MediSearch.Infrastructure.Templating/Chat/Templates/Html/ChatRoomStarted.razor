@@ -1,0 +1,29 @@
+@inject ITextLocalizer T
+@inject AppUrlBuilder UrlBuilder
+
+<EmailLayout Title="@T[ChatRoomStartedTemplateCodes.ChatRoomStartedTitle]">
+    <h1>@T[ChatRoomStartedTemplateCodes.ChatRoomStartedTitle]</h1>
+
+    <p>@T[ChatRoomStartedTemplateCodes.ChatRoomStartedIntro]</p>
+
+    <div class="info-block">
+        <div class="label">@T[SharedTemplateCodes.CompanyLabel]</div>
+        <div class="value">@Model.CompanyName</div>
+    </div>
+
+    <div class="info-block">
+        <div class="label">@T[ChatRoomStartedTemplateCodes.ChatRoomStartedCounterpartyLabel]</div>
+        <div class="value">@Model.CounterpartyName</div>
+    </div>
+
+    <p>@T[ChatRoomStartedTemplateCodes.ChatRoomStartedBody]</p>
+
+    <div class="btn-center">
+        <a href="@UrlBuilder.ClientLoginUrl" class="btn">@T[SharedTemplateCodes.OpenMediSearchButton]</a>
+    </div>
+</EmailLayout>
+
+@code {
+    [Parameter, EditorRequired]
+    public required ChatRoomStartedModel Model { get; set; } 
+}

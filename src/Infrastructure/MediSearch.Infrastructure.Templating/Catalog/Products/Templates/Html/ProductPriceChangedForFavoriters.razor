@@ -1,0 +1,34 @@
+@inject ITextLocalizer T
+@inject AppUrlBuilder UrlBuilder
+
+<EmailLayout Title="@T[ProductPriceChangedForFavoritersTemplateCodes.ProductPriceChangedForFavoritersTitle]">
+    <h1>@T[ProductPriceChangedForFavoritersTemplateCodes.ProductPriceChangedForFavoritersTitle]</h1>
+
+    <p>@T[ProductPriceChangedForFavoritersTemplateCodes.ProductPriceChangedForFavoritersIntro]</p>
+
+    <div class="info-block">
+        <div class="label">@T[SharedTemplateCodes.ProductLabel]</div>
+        <div class="value">@Model.ProductName</div>
+    </div>
+
+    <div class="info-block">
+        <div class="label">@T[ProductPriceChangedForFavoritersTemplateCodes.ProductPriceChangedForFavoritersPreviousPriceLabel]</div>
+        <div class="value">@Model.PreviousPrice</div>
+    </div>
+
+    <div class="info-block">
+        <div class="label">@T[ProductPriceChangedForFavoritersTemplateCodes.ProductPriceChangedForFavoritersNewPriceLabel]</div>
+        <div class="value">@Model.NewPrice</div>
+    </div>
+
+    <p>@T[ProductPriceChangedForFavoritersTemplateCodes.ProductPriceChangedForFavoritersBody]</p>
+
+    <div class="btn-center">
+        <a href="@UrlBuilder.ClientLoginUrl" class="btn">@T[SharedTemplateCodes.OpenMediSearchButton]</a>
+    </div>
+</EmailLayout>
+
+@code {
+    [Parameter, EditorRequired]
+    public required ProductPriceChangedForFavoritersModel Model { get; set; } 
+}

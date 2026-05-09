@@ -1,0 +1,25 @@
+@inject ITextLocalizer T
+@inject AppUrlBuilder UrlBuilder
+
+<EmailLayout Title="@T[AccountEmailConfirmationRequestedTemplateCodes.AccountEmailConfirmationTitle]">
+    <h1>@T[SharedTemplateCodes.EmailGreeting], <span class="capitalize-name">@Model.FullName</span> 👋</h1>
+
+    <p>@T[AccountEmailConfirmationRequestedTemplateCodes.AccountEmailConfirmationIntro]</p>
+
+    <div class="btn-center">
+        <a 
+            href="@UrlBuilder.BuildEmailConfirmationUrl(Model.ExternalUserId, Model.ConfirmationToken)"
+            class="btn"
+        >@T[AccountEmailConfirmationRequestedTemplateCodes.AccountEmailConfirmationButton]</a>
+    </div>
+
+    <hr class="divider" />
+
+    <p class="muted">@T[SharedTemplateCodes.NotYouNotice]</p>
+</EmailLayout>
+
+@code {
+    [Parameter, EditorRequired]
+    public required AccountEmailConfirmationRequestedModel Model { get; set; } 
+}
+

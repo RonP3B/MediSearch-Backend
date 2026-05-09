@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>MediSearch.Infrastructure.Localization</RootNamespace>
+    <AssemblyName>MediSearch.Infrastructure.Localization</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="**\*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\MediSearch.Core.Application\MediSearch.Core.Application.csproj" />
+  </ItemGroup>
+</Project>

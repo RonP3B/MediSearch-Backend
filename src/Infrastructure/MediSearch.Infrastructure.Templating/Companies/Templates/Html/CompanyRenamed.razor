@@ -1,0 +1,24 @@
+@inject ITextLocalizer T
+
+<EmailLayout Title="@T[CompanyRenamedTemplateCodes.CompanyRenamedTitle]">
+    <h1>@T[CompanyRenamedTemplateCodes.CompanyRenamedTitle]</h1>
+
+    <p>@T[CompanyRenamedTemplateCodes.CompanyRenamedIntro]</p>
+
+    <div class="info-block">
+        <div class="label">@T[CompanyRenamedTemplateCodes.CompanyRenamedPreviousNameLabel]</div>
+        <div class="value">@Model.PreviousCompanyName</div>
+    </div>
+
+    <div class="info-block">
+        <div class="label">@T[CompanyRenamedTemplateCodes.CompanyRenamedNewNameLabel]</div>
+        <div class="value">@Model.NewCompanyName</div>
+    </div>
+
+    <p>@T[CompanyRenamedTemplateCodes.CompanyRenamedBody]</p>
+</EmailLayout>
+
+@code {
+    [Parameter, EditorRequired]
+    public required CompanyRenamedModel Model { get; set; } 
+}

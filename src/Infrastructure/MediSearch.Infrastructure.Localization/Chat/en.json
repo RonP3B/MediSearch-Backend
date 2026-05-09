@@ -1,0 +1,14 @@
+﻿{
+  "Domain.Chat.ChatRooms.ParticipantsMustBeDistinct": "Chat room participants must be distinct.",
+  "Domain.Chat.ChatRooms.ParticipantNotFound": "The specified participant does not exist.",
+  "Domain.Chat.Messages.MediaTypeDoesNotMatchAsset": "The media type does not match the attached asset.",
+  "Domain.Chat.Messages.MessageMustHaveContent": "The message must contain text or media.",
+  "Application.Chat.RecipientDoesNotExist": "The specified recipient does not exist.",
+  "Application.Chat.ChatRoomAlreadyExists": "A chat room with these participants already exists.",
+  "Application.Chat.ChatNotAllowed": "A chat room with these participants is not allowed",
+  "Application.Chat.ChatRoomStartedEmailSubject": "New chat started",
+  "Infrastructure.Chat.ChatRoomStartedTitle": "A new chat is waiting for your team",
+  "Infrastructure.Chat.ChatRoomStartedIntro": "A new chat room has been created for your company on MediSearch.",
+  "Infrastructure.Chat.ChatRoomStartedCounterpartyLabel": "Contact",
+  "Infrastructure.Chat.ChatRoomStartedBody": "Sign in to review the conversation and respond to the new contact as soon as possible."
+}

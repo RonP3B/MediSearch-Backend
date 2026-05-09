@@ -1,0 +1,9 @@
+﻿global using Mapster;
+global using MediatR;
+global using MediSearch.Presentation.WebApi.Shared.Cors;
+global using MediSearch.Presentation.WebApi.Shared.Endpoints;
+global using MediSearch.Presentation.WebApi.Shared.ExceptionHandling;
+global using MediSearch.Presentation.WebApi.Shared.SignalR;
+global using MediSearch.Presentation.WebApi.Shared.Startup;
+global using Microsoft.AspNetCore.Http.HttpResults;
+global using Microsoft.AspNetCore.Mvc;

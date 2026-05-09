@@ -1,0 +1,119 @@
+﻿<!-- For more info on central package management go to https://devblogs.microsoft.com/nuget/introducing-central-package-management/ -->
+<Project>
+  <PropertyGroup>
+    <!-- ──────────────────────────────────────────────────────────────
+         Central version management.
+
+         NOTE: EfcoreVersion and AspnetVersion track the same .NET
+         major/minor release cycle, but patch versions can diverge.
+    ─────────────────────────────────────────────────────────────── -->
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <!-- Core framework -->
+    <EfcoreVersion>10.0.7</EfcoreVersion>
+    <AspnetVersion>10.0.7</AspnetVersion>
+    <MicrosoftExtensionsVersion>10.0.5</MicrosoftExtensionsVersion>
+    <AspireVersion>13.2.2</AspireVersion>
+    <!-- Third-party -->
+    <MassTransitVersion>8.3.6</MassTransitVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- ── ASP.NET Core ─────────────────────────────────────────── -->
+    <PackageVersion
+      Include="Microsoft.AspNetCore.Authentication.JwtBearer"
+      Version="$(AspnetVersion)"
+    />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="$(AspnetVersion)" />
+    <PackageVersion
+      Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore"
+      Version="$(AspnetVersion)"
+    />
+    <PackageVersion
+      Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore"
+      Version="$(AspnetVersion)"
+    />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(AspnetVersion)" />
+    <!-- ── Entity Framework Core ───────────────────────────────── -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(EfcoreVersion)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="$(EfcoreVersion)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EfcoreVersion)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="$(EfcoreVersion)" />
+    <PackageVersion Include="EFCore.NamingConventions" Version="10.0.1" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
+    <!-- ── Microsoft Extensions ────────────────────────────────── -->
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.5.0" />
+    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.5.0" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Hybrid" Version="10.5.0" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.7" />
+    <PackageVersion
+      Include="Microsoft.Extensions.Configuration.Json"
+      Version="$(MicrosoftExtensionsVersion)"
+    />
+    <PackageVersion
+      Include="Microsoft.Extensions.Configuration.EnvironmentVariables"
+      Version="$(MicrosoftExtensionsVersion)"
+    />
+    <PackageVersion
+      Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore"
+      Version="10.0.7"
+    />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.7" />
+    <!-- ── Messaging (MassTransit) ──────────────────── -->
+    <PackageVersion Include="MassTransit" Version="$(MassTransitVersion)" />
+    <PackageVersion Include="MassTransit.Abstractions" Version="$(MassTransitVersion)" />
+    <PackageVersion Include="MassTransit.RabbitMQ" Version="$(MassTransitVersion)" />
+    <PackageVersion Include="MassTransit.EntityFrameworkCore" Version="$(MassTransitVersion)" />
+    <!-- ── Mediator ─────────────────────────────────────────────── -->
+    <PackageVersion Include="MediatR" Version="14.1.0" />
+    <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
+    <!-- ── Validation ───────────────────────────────────────────── -->
+    <PackageVersion Include="Ardalis.GuardClauses" Version="5.0.0" />
+    <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+    <!-- ── Mapping ──────────────────────────────────────────────── -->
+    <PackageVersion Include="Mapster" Version="10.0.7" />
+    <!-- ── Database / Data Access ───────────────────────────────── -->
+    <PackageVersion Include="Dapper" Version="2.1.72" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="5.2.2" />
+    <!-- ── Email ────────────────────────────────────────────────── -->
+    <PackageVersion Include="MailKit" Version="4.16.0" />
+    <PackageVersion Include="Resend" Version="0.5.0" />
+    <PackageVersion Include="SendGrid" Version="9.29.3" />
+    <!-- ── Templating ───────────────────────────────────────────── -->
+    <PackageVersion Include="Razor.Templating.Core" Version="3.1.0" />
+    <!-- ── API Documentation ────────────────────────────────────── -->
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.14.5" />
+    <!-- ── DI / Service Registration ───────────────────────────── -->
+    <PackageVersion Include="Scrutor" Version="7.0.0" />
+    <!-- ── Azure / Configuration ────────────────────────────────── -->
+    <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.0" />
+    <PackageVersion Include="Azure.Identity" Version="1.21.0" />
+    <!-- ── Aspire ─────────────────────────────────────── -->
+    <PackageVersion Include="Aspire.RabbitMQ.Client" Version="13.2.4" />
+    <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.2.4" />
+    <PackageVersion Include="Aspire.StackExchange.Redis.DistributedCaching" Version="13.2.4" />
+    <PackageVersion Include="Aspire.Hosting.Azure.PostgreSQL" Version="13.2.4" />
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.2.4" />
+    <PackageVersion Include="Aspire.Hosting.Azure.AppContainers" Version="13.2.4" />
+    <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.2.4" />
+    <PackageVersion Include="Aspire.Hosting.Azure.Redis" Version="13.2.4" />
+    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.2.4" />
+    <PackageVersion Include="Aspire.Hosting.Redis" Version="13.2.4" />
+    <PackageVersion Include="Aspire.Hosting.Testing" Version="13.2.4" />
+    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.MailPit" Version="13.1.1" />
+    <!-- ── OpenTelemetry ─────────────────────────────────────── -->
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.3" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.15.3" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.2" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.15.1" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.15.1" />
+    <!-- ── Utilities ─────────────────────────────────────── -->
+    <PackageVersion Include="System.Configuration.ConfigurationManager" Version="9.0.0" />
+    <PackageVersion
+      Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets"
+      Version="1.23.0"
+    />
+    <!-- ── File Storage ─────────────────────────────────────── -->
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.22.1" />
+  </ItemGroup>
+</Project>

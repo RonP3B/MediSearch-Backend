@@ -1,0 +1,59 @@
+@inject ITextLocalizer T
+@inject AppUrlBuilder UrlBuilder
+
+<EmailLayout Title="@T[CompanyLogoChangedTemplateCodes.CompanyLogoChangedTitle]">
+    <style>
+        .logo-preview {
+            margin: 24px 0;
+            padding: 24px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .logo-preview__label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #94a3b8;
+            margin-bottom: 16px;
+        }
+
+        .logo-preview__image {
+            display: block;
+            max-width: 180px;
+            max-height: 180px;
+            width: auto;
+            height: auto;
+            margin: 0 auto;
+            object-fit: contain;
+        }
+    </style>
+
+    <h1>@T[CompanyLogoChangedTemplateCodes.CompanyLogoChangedTitle]</h1>
+
+    <p>@T[CompanyLogoChangedTemplateCodes.CompanyLogoChangedIntro]</p>
+
+    <div class="info-block">
+        <div class="label">@T[SharedTemplateCodes.CompanyLabel]</div>
+        <div class="value">@Model.CompanyName</div>
+    </div>
+
+    <p>@T[CompanyLogoChangedTemplateCodes.CompanyLogoChangedBody]</p>
+
+    <div class="logo-preview">
+        <div class="logo-preview__label">@T[CompanyLogoChangedTemplateCodes.CompanyLogoChangedImageLabel]</div>
+        <img
+            src="@UrlBuilder.BuildAssetUrl(Model.CompanyNewImageKey)"
+            alt="@($"{Model.CompanyName} {T[CompanyLogoChangedTemplateCodes.CompanyLogoChangedImageLabel]}")"
+            class="logo-preview__image" 
+        />
+    </div>
+</EmailLayout>
+
+@code {
+    [Parameter, EditorRequired]
+    public required CompanyLogoChangedModel Model { get; set; }
+}

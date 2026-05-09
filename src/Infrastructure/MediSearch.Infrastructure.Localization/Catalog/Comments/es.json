@@ -1,0 +1,18 @@
+﻿{
+  "Domain.Catalog.Comments.EditWindowExpired": "El tiempo permitido para editar este comentario ha expirado.",
+  "Domain.Catalog.Comments.CannotReplyToReply": "No se permite responder a una respuesta.",
+  "Application.Catalog.Comments.CommentDoesNotExist": "El comentario especificado no existe.",
+  "Application.Catalog.Comments.ProductDoesNotExist": "El producto especificado no existe.",
+  "Application.Catalog.Comments.CommentPostedEmailSubject": "Nuevo comentario en producto",
+  "Application.Catalog.Comments.CommentRepliedToEmailSubject": "Alguien respondio tu comentario",
+  "Infrastructure.Catalog.Comments.CommentPostedTitle": "Hay un nuevo comentario esperando a tu equipo",
+  "Infrastructure.Catalog.Comments.CommentPostedIntro": "Se ha publicado un nuevo comentario en uno de tus productos en MediSearch.",
+  "Infrastructure.Catalog.Comments.CommentPostedAuthorLabel": "Autor del comentario",
+  "Infrastructure.Catalog.Comments.CommentPostedCommentLabel": "Comentario",
+  "Infrastructure.Catalog.Comments.CommentPostedBody": "Inicia sesion para revisar el comentario y responder cuando sea necesario.",
+  "Infrastructure.Catalog.Comments.CommentRepliedToTitle": "Alguien respondio tu comentario",
+  "Infrastructure.Catalog.Comments.CommentRepliedToIntro": "Se ha publicado una nueva respuesta en uno de tus comentarios en MediSearch.",
+  "Infrastructure.Catalog.Comments.CommentRepliedToAuthorLabel": "Autor de la respuesta",
+  "Infrastructure.Catalog.Comments.CommentRepliedToReplyLabel": "Respuesta",
+  "Infrastructure.Catalog.Comments.CommentRepliedToBody": "Inicia sesion para revisar la respuesta y continuar la conversacion si es necesario."
+}

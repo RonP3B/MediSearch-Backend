@@ -1,0 +1,29 @@
+@inject ITextLocalizer T
+@inject AppUrlBuilder UrlBuilder
+
+<EmailLayout Title="@T[CompanyAddedToFavoritesTemplateCodes.CompanyAddedToFavoritesTitle]">
+    <h1>@T[CompanyAddedToFavoritesTemplateCodes.CompanyAddedToFavoritesTitle]</h1>
+
+    <p>@T[CompanyAddedToFavoritesTemplateCodes.CompanyAddedToFavoritesIntro]</p>
+
+    <div class="info-block">
+        <div class="label">@T[SharedTemplateCodes.CompanyLabel]</div>
+        <div class="value">@Model.CompanyName</div>
+    </div>
+
+    <div class="info-block">
+        <div class="label">@T[CompanyAddedToFavoritesTemplateCodes.CompanyAddedToFavoritesFavoriterLabel]</div>
+        <div class="value">@Model.FavoriterName</div>
+    </div>
+
+    <p>@T[CompanyAddedToFavoritesTemplateCodes.CompanyAddedToFavoritesBody]</p>
+
+    <div class="btn-center">
+        <a href="@UrlBuilder.ClientLoginUrl" class="btn">@T[SharedTemplateCodes.GoToMediSearchButton]</a>
+    </div>
+</EmailLayout>
+
+@code {
+    [Parameter, EditorRequired]
+    public required CompanyAddedToFavoritesModel Model { get; set; } 
+}

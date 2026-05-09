@@ -1,0 +1,14 @@
+﻿global using System.Data.Common;
+global using Ardalis.GuardClauses;
+global using Dapper;
+global using Mapster;
+global using MediSearch.Infrastructure.Persistence.Shared.ConnectionFactories;
+global using MediSearch.Infrastructure.Persistence.Shared.Contexts;
+global using MediSearch.Infrastructure.Persistence.Shared.ValueConverters;
+global using Microsoft.AspNetCore.Identity;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;
+global using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.Logging;
+global using Npgsql;

@@ -1,0 +1,18 @@
+﻿{
+  "Domain.Catalog.Comments.EditWindowExpired": "The time window to edit this comment has expired.",
+  "Domain.Catalog.Comments.CannotReplyToReply": "Replies to replies are not allowed.",
+  "Application.Catalog.Comments.CommentDoesNotExist": "The specified comment does not exist.",
+  "Application.Catalog.Comments.ProductDoesNotExist": "The specified product does not exist.",
+  "Application.Catalog.Comments.CommentPostedEmailSubject": "New product comment",
+  "Application.Catalog.Comments.CommentRepliedToEmailSubject": "Someone replied to your comment",
+  "Infrastructure.Catalog.Comments.CommentPostedTitle": "A new product comment is waiting for your team",
+  "Infrastructure.Catalog.Comments.CommentPostedIntro": "A new comment has been posted on one of your products on MediSearch.",
+  "Infrastructure.Catalog.Comments.CommentPostedAuthorLabel": "Comment author",
+  "Infrastructure.Catalog.Comments.CommentPostedCommentLabel": "Comment",
+  "Infrastructure.Catalog.Comments.CommentPostedBody": "Sign in to review the comment and reply when needed.",
+  "Infrastructure.Catalog.Comments.CommentRepliedToTitle": "Someone replied to your comment",
+  "Infrastructure.Catalog.Comments.CommentRepliedToIntro": "A new reply has been posted on one of your comments in MediSearch.",
+  "Infrastructure.Catalog.Comments.CommentRepliedToAuthorLabel": "Reply author",
+  "Infrastructure.Catalog.Comments.CommentRepliedToReplyLabel": "Reply",
+  "Infrastructure.Catalog.Comments.CommentRepliedToBody": "Sign in to review the reply and continue the conversation if needed."
+}

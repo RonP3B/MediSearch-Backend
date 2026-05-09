@@ -1,0 +1,29 @@
+@inject ITextLocalizer T
+@inject AppUrlBuilder UrlBuilder
+
+<EmailLayout Title="@T[ProductCreatedTemplateCodes.ProductCreatedTitle]">
+    <h1>@T[ProductCreatedTemplateCodes.ProductCreatedTitle]</h1>
+
+    <p>@T[ProductCreatedTemplateCodes.ProductCreatedIntro]</p>
+
+    <div class="info-block">
+        <div class="label">@T[SharedTemplateCodes.ProductLabel]</div>
+        <div class="value">@Model.ProductName</div>
+    </div>
+
+    <div class="info-block">
+        <div class="label">@T[ProductCreatedTemplateCodes.ProductCreatedPriceLabel]</div>
+        <div class="value">@Model.Price</div>
+    </div>
+
+    <p>@T[ProductCreatedTemplateCodes.ProductCreatedBody]</p>
+
+    <div class="btn-center">
+        <a href="@UrlBuilder.ClientLoginUrl" class="btn">@T[SharedTemplateCodes.OpenMediSearchButton]</a>
+    </div>
+</EmailLayout>
+
+@code {
+    [Parameter, EditorRequired]
+    public required ProductCreatedModel Model { get; set; }
+}

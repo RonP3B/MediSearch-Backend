@@ -1,0 +1,20 @@
+﻿{
+  "Domain.Companies.CeoNameInvalid": "CEO name contains invalid characters.",
+  "Domain.Companies.CompanyNameTooLong": "Company name cannot be longer than {MaxLength} characters.",
+  "Domain.Companies.CompanyNameTooShort": "Company name must be at least {MinLength} characters long.",
+  "Domain.Companies.CompanyNameInvalid": "Company name contains invalid characters.",
+  "Domain.Companies.CeoNameTooLong": "CEO name cannot be longer than {MaxLength} characters.",
+  "Domain.Companies.CeoNameTooShort": "CEO name must be at least {MinLength} characters long.",
+  "Application.Companies.CompanyNameAlreadyExists": "A company with this name already exists.",
+  "Application.Companies.CompanyLogoChangedEmailSubject": "A favorite company updated its logo",
+  "Application.Companies.CompanyRenamedEmailSubject": "A favorite company updated its name",
+  "Infrastructure.Companies.CompanyLogoChangedTitle": "A favorite company updated its logo",
+  "Infrastructure.Companies.CompanyLogoChangedIntro": "One of your favorite companies updated its logo on MediSearch.",
+  "Infrastructure.Companies.CompanyLogoChangedImageLabel": "Updated logo",
+  "Infrastructure.Companies.CompanyLogoChangedBody": "Here is the updated logo shared by that company.",
+  "Infrastructure.Companies.CompanyRenamedTitle": "A favorite company updated its name",
+  "Infrastructure.Companies.CompanyRenamedIntro": "One of your favorite companies updated its name on MediSearch.",
+  "Infrastructure.Companies.CompanyRenamedPreviousNameLabel": "Previous name",
+  "Infrastructure.Companies.CompanyRenamedNewNameLabel": "New name",
+  "Infrastructure.Companies.CompanyRenamedBody": "You may start seeing the updated company name across MediSearch from now on."
+}

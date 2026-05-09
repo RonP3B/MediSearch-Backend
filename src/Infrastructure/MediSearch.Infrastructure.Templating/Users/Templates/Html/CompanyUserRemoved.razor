@@ -1,0 +1,28 @@
+@inject ITextLocalizer T
+
+<EmailLayout Title="@T[CompanyUserRemovedTemplateCodes.CompanyUserRemovedTitle]">
+    <h1>@T[SharedTemplateCodes.EmailGreeting], <span class="capitalize-name">@Model.FullName</span></h1>
+
+    <p>@T[CompanyUserRemovedTemplateCodes.CompanyUserRemovedIntro]</p>
+
+    <div class="info-block">
+        <div class="label">@T[CompanyUserRemovedTemplateCodes.CompanyUserRemovedUsernameLabel]</div>
+        <div class="value">@Model.Username</div>
+    </div>
+
+    <div class="info-block">
+        <div class="label">@T[SharedTemplateCodes.CompanyLabel]</div>
+        <div class="value">@Model.CompanyName</div>
+    </div>
+
+    <p>@T[CompanyUserRemovedTemplateCodes.CompanyUserRemovedBody]</p>
+
+    <hr class="divider" />
+
+    <p class="muted">@T[CompanyUserRemovedTemplateCodes.CompanyUserRemovedFooter]</p>
+</EmailLayout>
+
+@code {
+    [Parameter, EditorRequired]
+    public required CompanyUserRemovedModel Model { get; set; } 
+}

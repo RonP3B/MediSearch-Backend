@@ -1,0 +1,26 @@
+﻿<Project Sdk="Aspire.AppHost.Sdk/13.1.0">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>MediSearch.Hosting.AppHost</RootNamespace>
+    <AssemblyName>MediSearch.Hosting.AppHost</AssemblyName>
+    <UserSecretsId>5cb3a120-d870-4068-99a8-8dde90772813</UserSecretsId>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" />
+    <PackageReference Include="Aspire.Hosting.Azure.AppContainers" />
+    <PackageReference Include="Aspire.Hosting.Azure.Redis" />
+    <PackageReference Include="Aspire.Hosting.JavaScript" />
+    <PackageReference Include="Aspire.Hosting.Azure.PostgreSQL" />
+    <PackageReference Include="Aspire.Hosting.RabbitMQ" />
+    <PackageReference Include="Aspire.Hosting.Redis" />
+    <PackageReference Include="Aspire.Hosting.Testing" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.MailPit" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Presentation\MediSearch.Presentation.WebApi\MediSearch.Presentation.WebApi.csproj" />
+    <ProjectReference
+      Include="..\..\Shared\MediSearch.Shared.Constants\MediSearch.Shared.Constants.csproj"
+      IsAspireProjectResource="false"
+    />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,6 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>MediSearch.Shared.Constants</RootNamespace>
+    <AssemblyName>MediSearch.Shared.Constants</AssemblyName>
+  </PropertyGroup>
+</Project>
