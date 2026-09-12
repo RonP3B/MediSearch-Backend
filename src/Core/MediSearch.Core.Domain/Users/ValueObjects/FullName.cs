@@ -32,8 +32,8 @@ public sealed partial class FullName : ValueObject
             return Result<FullName>.Fail(failures);
         }
 
-        firstName = firstName.Trim().ToLowerInvariant();
-        lastName = lastName.Trim().ToLowerInvariant();
+        firstName = firstName.Trim();
+        lastName = lastName.Trim();
 
         if (firstName.Length < MinLength)
         {

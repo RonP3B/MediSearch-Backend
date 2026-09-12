@@ -10,6 +10,7 @@ public sealed partial class CompanyName : ValueObject
     private CompanyName(string value)
     {
         Value = value;
+        Normalized = value.ToLowerInvariant();
     }
 
     public static Result<CompanyName> TryFrom(string value)
@@ -23,7 +24,7 @@ public sealed partial class CompanyName : ValueObject
 
         var failures = new List<DomainFailure>();
 
-        value = value.Trim().ToLowerInvariant();
+        value = value.Trim();
 
         if (value.Length < MinLength)
         {
@@ -75,6 +76,13 @@ public sealed partial class CompanyName : ValueObject
 
     public string Value { get; private set; }
 
+    /// <summary>
+    /// Lower-cased form of the value. It is what uniqueness checks, lookups and equality
+    /// use, so two values that differ only in casing are the same value, while
+    /// <see cref="Value"/> still holds exactly what the user typed.
+    /// </summary>
+    public string Normalized { get; private set; }
+
     public static implicit operator string(CompanyName name) => name.Value;
 
     public override string ToString() => Value;
@@ -86,6 +94,6 @@ public sealed partial class CompanyName : ValueObject
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
-        yield return Value;
+        yield return Normalized;
     }
 }
