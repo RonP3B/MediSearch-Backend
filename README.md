@@ -36,6 +36,7 @@ That is why the docs folder matters in this project: the tricky parts are not on
 - `Dapper` for read-side query services
 - `MassTransit` + `RabbitMQ` + EF Core outbox
 - `Redis`
+- `Keycloak` as the external identity provider
 - `JWT` authentication
 - `.NET Aspire` for local orchestration
 - `MailPit` in development, `Resend` by default outside development
@@ -68,6 +69,7 @@ If you are onboarding, these are the best docs to start with:
 - [Business Context And Agent Model](docs/Business-Context-And-Agent-Model.md)
 - [Validation And Value Objects](docs/Validation-And-Value-Objects.md)
 - [Authorization And Identity Flow](docs/Authorization-And-Identity-Flow.md)
+- [Keycloak Identity Provider](docs/Keycloak-Identity-Provider.md)
 - [Compensations And External Consistency](docs/Compensations-And-External-Consistency.md)
 
 For the full set:
@@ -93,9 +95,10 @@ dotnet run --project src/Hosting/MediSearch.Hosting.AppHost
 
 ## 🧪 Local Dev Notes
 
-- Aspire starts PostgreSQL, RabbitMQ, Redis, and MailPit for you.
+- Aspire starts PostgreSQL, RabbitMQ, Redis, MailPit, and Keycloak for you.
+- Keycloak is the account store. Its admin console runs at <http://localhost:8080> and the realm is created automatically from `src/Hosting/MediSearch.Hosting.AppHost/Realms/medisearch-realm.json`.
 - In development, the Web API applies migrations automatically.
-- In development, the app also ensures the system administrator account exists.
+- In development, the app also ensures the system administrator account exists, in Keycloak and in the database.
 - The seeded administrator username is `administrator`.
 - Its password comes from the `AdminPassword` user secret.
 - When running through Aspire, connection strings are injected automatically.
@@ -108,6 +111,7 @@ dotnet run --project src/Hosting/MediSearch.Hosting.AppHost
 - Commands and queries own authorization through application request attributes and MediatR behaviors.
 - Methods named `OrDefault` explicitly mean the resource may be missing and `null` is part of the contract.
 - External side effects that must behave transactionally with the database go through the compensation workflow.
+- Accounts and passwords live in Keycloak; roles, permissions, and every business fact about a user live in PostgreSQL.
 
 ## 📌 In Short
 

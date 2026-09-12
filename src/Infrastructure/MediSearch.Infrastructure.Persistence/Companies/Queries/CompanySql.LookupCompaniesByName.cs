@@ -12,7 +12,7 @@ internal static partial class CompanySql
             c.image_key             AS {nameof(CompanyLookupDto.ImageKey)},
             c.company_type_id       AS {nameof(CompanyLookupDto.CompanyTypeId)}
         FROM companies c
-        WHERE c.name ILIKE @Name
+        WHERE c.normalized_name ILIKE @Name
             AND c.id != @UserCompanyId
             AND c.company_type_id = 
                 CASE 
@@ -24,6 +24,6 @@ internal static partial class CompanySql
                     THEN @LaboratoryTypeId
                     ELSE @PharmacyTypeId
                 END
-        ORDER BY c.name;
+        ORDER BY c.normalized_name;
         ";
 }

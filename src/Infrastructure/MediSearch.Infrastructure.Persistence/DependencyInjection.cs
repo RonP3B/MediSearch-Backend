@@ -40,11 +40,6 @@ public static class DependencyInjection
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
 
-        builder
-            .Services.AddIdentityCore<IdentityUser>()
-            .AddEntityFrameworkStores<AppDbContext>()
-            .AddDefaultTokenProviders();
-
         builder.Services.Scan(scan =>
             scan.FromAssemblies(AssemblyReference.Assembly)
                 .AddClasses(c => c.AssignableTo<IRepository>(), publicOnly: false)

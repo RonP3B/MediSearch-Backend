@@ -15,16 +15,24 @@ internal sealed class ClassificationCategoryConfiguration
             .HasConversion(new EntityIdValueConverter<ClassificationCategory>())
             .ValueGeneratedNever();
 
-        builder
-            .Property(c => c.Name)
-            .HasConversion(new ClassificationNameValueConverter())
-            .HasMaxLength(150);
+        builder.ComplexProperty(
+            c => c.Name,
+            name =>
+            {
+                name.Property(p => p.Value)
+                    .HasColumnName("name")
+                    .HasMaxLength(150);
+
+                name.Property(p => p.Normalized)
+                    .HasColumnName("normalized_name")
+                    .HasMaxLength(150);
+            }
+        );
 
         builder
             .Property(c => c.ClassificationId)
             .HasConversion(new EntityIdValueConverter<ProductClassification>());
 
         builder.HasKey(c => c.Id);
-        builder.HasIndex(c => new { c.ClassificationId, c.Name }).IsUnique();
     }
 }

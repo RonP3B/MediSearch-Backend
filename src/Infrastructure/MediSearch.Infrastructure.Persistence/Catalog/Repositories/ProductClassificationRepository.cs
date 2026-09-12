@@ -33,7 +33,7 @@ internal sealed class ProductClassificationRepository(AppDbContext dbContext)
     )
     {
         return await dbContext.ProductClassifications.AnyAsync(
-            pc => pc.Name == name,
+            pc => pc.Name.Normalized == name.Normalized,
             cancellationToken
         );
     }
@@ -45,7 +45,7 @@ internal sealed class ProductClassificationRepository(AppDbContext dbContext)
     )
     {
         return await dbContext.ProductClassifications.AnyAsync(
-            pc => pc.Name == name && pc.Id != excludeId,
+            pc => pc.Name.Normalized == name.Normalized && pc.Id != excludeId,
             cancellationToken
         );
     }

@@ -85,6 +85,52 @@ Examples in the codebase:
 
 This is why some validators validate the whole command object rather than a single field.
 
+## Normalized Values
+
+Some values must compare case-insensitively — two usernames, company names or emails that differ only in casing are the same value and must not both exist.
+
+The wrong way to get that is to lower-case the value on the way in. It works for uniqueness, and it silently destroys what the user typed: a company called "MediSearch Labs" comes back out of the database as "medisearch labs" and is rendered that way everywhere.
+
+So a value object that needs case-insensitive comparison keeps both forms:
+
+- `Value` (or `Address`, for `Email`) holds exactly what the user typed, trimmed
+- `Normalized` holds the lower-cased form
+- `GetEqualityComponents()` yields `Normalized`, so equality is case-insensitive
+
+The value objects that currently do this are `Username`, `Email`, `CompanyName`, `ProductName`, and the product classification `Name`.
+
+A value object with **no** uniqueness rule does not get a `Normalized`, and it must not lower-case anything either — `FullName` and `CompanyCeoName` are display-only and keep the user's casing as-is.
+
+### How they are mapped
+
+A normalized value object maps to two columns through a complex property, not a value converter:
+
+```csharp
+builder.ComplexProperty(
+    c => c.Name,
+    name =>
+    {
+        name.Property(p => p.Value).HasColumnName("name").HasMaxLength(100);
+        name.Property(p => p.Normalized).HasColumnName("normalized_name").HasMaxLength(100);
+    }
+);
+```
+
+### How they are indexed
+
+EF Core cannot build an index over a member of a complex property, so the unique index on the normalized column is **created by hand in a migration**, and the entity configuration carries a comment saying so. `ix_users_normalized_username` was the first of these; the rest were added alongside it.
+
+Uniqueness checks in repositories must compare the normalized forms, not the value objects:
+
+```csharp
+return await dbContext.Companies.AnyAsync(
+    company => company.Name.Normalized == companyName.Normalized,
+    cancellationToken
+);
+```
+
+Read-side SQL follows the same split: filter and sort on `normalized_*`, select the original column for display.
+
 ## Why `DependentRules(...)` Matters
 
 You will see many rules structured like this:

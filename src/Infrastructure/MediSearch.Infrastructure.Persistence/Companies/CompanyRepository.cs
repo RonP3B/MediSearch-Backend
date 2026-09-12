@@ -31,7 +31,7 @@ internal sealed class CompanyRepository(AppDbContext dbContext) : ICompanyReposi
     )
     {
         return await dbContext.Companies.AnyAsync(
-            company => company.Name == companyName,
+            company => company.Name.Normalized == companyName.Normalized,
             cancellationToken
         );
     }
@@ -43,7 +43,8 @@ internal sealed class CompanyRepository(AppDbContext dbContext) : ICompanyReposi
     )
     {
         return await dbContext.Companies.AnyAsync(
-            company => company.Name == companyName && company.Id != excludeId,
+            company => company.Name.Normalized == companyName.Normalized
+                && company.Id != excludeId,
             cancellationToken
         );
     }
@@ -53,7 +54,10 @@ internal sealed class CompanyRepository(AppDbContext dbContext) : ICompanyReposi
         CancellationToken cancellationToken = default
     )
     {
-        return await dbContext.Companies.AnyAsync(c => c.Email == email, cancellationToken);
+        return await dbContext.Companies.AnyAsync(
+            c => c.Email.Normalized == email.Normalized,
+            cancellationToken
+        );
     }
 
     public async Task<bool> AreCompaniesOfDifferentTypeAsync(

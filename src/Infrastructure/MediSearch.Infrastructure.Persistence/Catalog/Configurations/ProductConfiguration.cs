@@ -22,10 +22,19 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
             .Property(p => p.ClassificationId)
             .HasConversion(new EntityIdValueConverter<ProductClassification>());
 
-        builder
-            .Property(p => p.Name)
-            .HasConversion(new ProductNameValueConverter())
-            .HasMaxLength(100);
+        builder.ComplexProperty(
+            p => p.Name,
+            name =>
+            {
+                name.Property(p => p.Value)
+                    .HasColumnName("name")
+                    .HasMaxLength(100);
+
+                name.Property(p => p.Normalized)
+                    .HasColumnName("normalized_name")
+                    .HasMaxLength(100);
+            }
+        );
 
         builder
             .Property(p => p.Description)
@@ -76,7 +85,6 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         );
 
         builder.HasKey(p => p.Id);
-        builder.HasIndex(p => new { p.CompanyId, p.Name }).IsUnique();
         builder.HasIndex(p => p.CompanyId);
         builder.HasIndex(p => p.ClassificationId);
         builder.HasIndex(p => p.CreatedAt);

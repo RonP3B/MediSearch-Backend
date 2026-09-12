@@ -23,7 +23,7 @@ public sealed partial class CompanyCeoName : ValueObject
 
         var failures = new List<DomainFailure>();
 
-        value = value.Trim().ToLowerInvariant();
+        value = value.Trim();
 
         if (value.Length > MaxLength)
         {

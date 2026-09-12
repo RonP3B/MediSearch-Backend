@@ -9,6 +9,7 @@ public sealed partial class Email : ValueObject
     private Email(string address)
     {
         Address = address;
+        Normalized = address.ToLowerInvariant();
     }
 
     public static Result<Email> TryFrom(string address)
@@ -20,7 +21,7 @@ public sealed partial class Email : ValueObject
 
         var failures = new List<DomainFailure>();
 
-        address = address.Trim().ToLowerInvariant();
+        address = address.Trim();
 
         if (address.Length > MaxLength)
         {
@@ -59,6 +60,13 @@ public sealed partial class Email : ValueObject
 
     public string Address { get; private set; }
 
+    /// <summary>
+    /// Lower-cased form of the value. It is what uniqueness checks, lookups and equality
+    /// use, so two values that differ only in casing are the same value, while
+    /// <see cref="Address"/> still holds exactly what the user typed.
+    /// </summary>
+    public string Normalized { get; private set; }
+
     public static implicit operator string(Email email) => email.ToString();
 
     public override string ToString() => Address;
@@ -67,7 +75,7 @@ public sealed partial class Email : ValueObject
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
-        yield return Address;
+        yield return Normalized;
     }
 
     [GeneratedRegex("^\\S+@\\S+\\.\\S+$", RegexOptions.IgnoreCase)]

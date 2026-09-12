@@ -14,10 +14,19 @@ internal sealed class CompanyConfiguration : IEntityTypeConfiguration<Company>
             .HasConversion(new EntityIdValueConverter<Company>())
             .ValueGeneratedNever();
 
-        builder
-            .Property(c => c.Name)
-            .HasConversion(new CompanyNameValueConverter())
-            .HasMaxLength(100);
+        builder.ComplexProperty(
+            c => c.Name,
+            name =>
+            {
+                name.Property(p => p.Value)
+                    .HasColumnName("name")
+                    .HasMaxLength(100);
+
+                name.Property(p => p.Normalized)
+                    .HasColumnName("normalized_name")
+                    .HasMaxLength(100);
+            }
+        );
 
         builder
             .Property(c => c.CeoName)
@@ -29,7 +38,19 @@ internal sealed class CompanyConfiguration : IEntityTypeConfiguration<Company>
             .HasConversion(new AssetKeyValueConverter())
             .HasMaxLength(500);
 
-        builder.Property(c => c.Email).HasConversion(new EmailValueConverter()).HasMaxLength(320);
+        builder.ComplexProperty(
+            c => c.Email,
+            email =>
+            {
+                email.Property(p => p.Address)
+                    .HasColumnName("email")
+                    .HasMaxLength(320);
+
+                email.Property(p => p.Normalized)
+                    .HasColumnName("normalized_email")
+                    .HasMaxLength(320);
+            }
+        );
 
         builder
             .Property(c => c.PhoneNumber)
@@ -69,8 +90,9 @@ internal sealed class CompanyConfiguration : IEntityTypeConfiguration<Company>
         builder.HasKey(x => x.Id);
         builder.HasIndex(c => c.CompanyTypeId);
         builder.HasIndex(c => new { c.CompanyTypeId, c.CreatedAt });
-        builder.HasIndex(c => c.Name).IsUnique();
-        builder.HasIndex(c => c.Email).IsUnique();
+
+        // Unique indexes over the normalized Name and Email columns are created by hand in a
+        // migration: EF cannot build an index over a complex property's member.
 
         builder
             .HasOne<CompanyType>()

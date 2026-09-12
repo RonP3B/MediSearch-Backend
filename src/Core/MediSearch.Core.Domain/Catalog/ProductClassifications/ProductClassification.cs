@@ -60,7 +60,7 @@ public sealed class ProductClassification : BaseAuditableEntity
 
         if (
             _categories.Any(c =>
-                string.Equals(c.Name, category.Name, StringComparison.OrdinalIgnoreCase)
+                c.Name == category.Name
             )
         )
         {
@@ -105,7 +105,7 @@ public sealed class ProductClassification : BaseAuditableEntity
         if (
             _categories.Any(c =>
                 c.Id != categoryId
-                && string.Equals(c.Name, newName, StringComparison.OrdinalIgnoreCase)
+                && c.Name == newName
             )
         )
         {

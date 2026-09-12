@@ -75,6 +75,8 @@ One important convention is that nullable lookups are explicitly named with `OrD
   - [Business Context And Agent Model](Business-Context-And-Agent-Model.md)
 - Auth and permissions:
   - [Authorization And Identity Flow](Authorization-And-Identity-Flow.md)
+- External identity provider and account flows:
+  - [Keycloak Identity Provider](Keycloak-Identity-Provider.md)
 - Messaging internals:
   - [MassTransit Messaging Architecture](MassTransit-Messaging-Architecture.md)
 
@@ -83,6 +85,7 @@ One important convention is that nullable lookups are explicitly named with `OrD
 The current default infrastructure stack is:
 
 - PostgreSQL for primary persistence
+- Keycloak as the external identity provider for accounts and credentials
 - RabbitMQ + MassTransit for messaging
 - EF Core outbox for transactional domain-event delivery
 - Redis for caching
@@ -101,3 +104,4 @@ The current default infrastructure stack is:
 - If you are calling an external service inside a command handler, read [Compensations And External Consistency](Compensations-And-External-Consistency.md).
 - If you are working on chat, favorites, comments, or company-user behavior, read [Business Context And Agent Model](Business-Context-And-Agent-Model.md).
 - If you are adding a secured request, read [Authorization And Identity Flow](Authorization-And-Identity-Flow.md).
+- If you are touching registration, login, or password/email flows, read [Keycloak Identity Provider](Keycloak-Identity-Provider.md).

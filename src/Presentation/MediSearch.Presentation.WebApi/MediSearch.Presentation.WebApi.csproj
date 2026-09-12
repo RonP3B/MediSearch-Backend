@@ -9,8 +9,10 @@
     <PackageReference Include="Azure.Identity" />
     <PackageReference Include="Mapster" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <!-- Not used directly: pins a patched Microsoft.OpenApi over the vulnerable
+         version Microsoft.AspNetCore.OpenApi pulls in. -->
+    <PackageReference Include="Microsoft.OpenApi" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>

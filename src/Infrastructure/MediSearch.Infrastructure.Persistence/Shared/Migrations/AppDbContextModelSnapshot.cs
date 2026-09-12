@@ -332,18 +332,25 @@ namespace MediSearch.Infrastructure.Persistence.Shared.Migrations
                         .HasColumnType("text")
                         .HasColumnName("last_modified_by");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)")
-                        .HasColumnName("name");
+                    b.ComplexProperty(typeof(Dictionary<string, object>), "Name", "MediSearch.Core.Domain.Catalog.ProductClassifications.ClassificationCategory.Name#Name", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<string>("Normalized")
+                                .IsRequired()
+                                .HasMaxLength(150)
+                                .HasColumnType("character varying(150)")
+                                .HasColumnName("normalized_name");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(150)
+                                .HasColumnType("character varying(150)")
+                                .HasColumnName("name");
+                        });
 
                     b.HasKey("Id")
                         .HasName("pk_classification_categories");
-
-                    b.HasIndex("ClassificationId", "Name")
-                        .IsUnique()
-                        .HasDatabaseName("ix_classification_categories_classification_id_name");
 
                     b.ToTable("classification_categories", (string)null);
                 });
@@ -372,18 +379,25 @@ namespace MediSearch.Infrastructure.Persistence.Shared.Migrations
                         .HasColumnType("text")
                         .HasColumnName("last_modified_by");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)")
-                        .HasColumnName("name");
+                    b.ComplexProperty(typeof(Dictionary<string, object>), "Name", "MediSearch.Core.Domain.Catalog.ProductClassifications.ProductClassification.Name#Name", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<string>("Normalized")
+                                .IsRequired()
+                                .HasMaxLength(150)
+                                .HasColumnType("character varying(150)")
+                                .HasColumnName("normalized_name");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(150)
+                                .HasColumnType("character varying(150)")
+                                .HasColumnName("name");
+                        });
 
                     b.HasKey("Id")
                         .HasName("pk_product_classifications");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("ix_product_classifications_name");
 
                     b.ToTable("product_classifications", (string)null);
                 });
@@ -426,12 +440,6 @@ namespace MediSearch.Infrastructure.Persistence.Shared.Migrations
                         .HasColumnType("text")
                         .HasColumnName("last_modified_by");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
-
                     b.Property<int>("Quantity")
                         .HasColumnType("integer")
                         .HasColumnName("quantity");
@@ -451,6 +459,23 @@ namespace MediSearch.Infrastructure.Persistence.Shared.Migrations
                                 .HasColumnName("price_currency");
                         });
 
+                    b.ComplexProperty(typeof(Dictionary<string, object>), "Name", "MediSearch.Core.Domain.Catalog.Products.Product.Name#ProductName", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<string>("Normalized")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("normalized_name");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("name");
+                        });
+
                     b.HasKey("Id")
                         .HasName("pk_products");
 
@@ -462,10 +487,6 @@ namespace MediSearch.Infrastructure.Persistence.Shared.Migrations
 
                     b.HasIndex("CreatedAt")
                         .HasDatabaseName("ix_products_created_at");
-
-                    b.HasIndex("CompanyId", "Name")
-                        .IsUnique()
-                        .HasDatabaseName("ix_products_company_id_name");
 
                     b.ToTable("products", (string)null);
                 });
@@ -582,12 +603,6 @@ namespace MediSearch.Infrastructure.Persistence.Shared.Migrations
                         .HasColumnType("text")
                         .HasColumnName("created_by");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(320)
-                        .HasColumnType("character varying(320)")
-                        .HasColumnName("email");
-
                     b.Property<string>("Facebook")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
@@ -612,12 +627,6 @@ namespace MediSearch.Infrastructure.Persistence.Shared.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("last_modified_by");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
@@ -658,19 +667,45 @@ namespace MediSearch.Infrastructure.Persistence.Shared.Migrations
                                 .HasColumnName("province");
                         });
 
+                    b.ComplexProperty(typeof(Dictionary<string, object>), "Email", "MediSearch.Core.Domain.Companies.Company.Email#Email", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<string>("Address")
+                                .IsRequired()
+                                .HasMaxLength(320)
+                                .HasColumnType("character varying(320)")
+                                .HasColumnName("email");
+
+                            b1.Property<string>("Normalized")
+                                .IsRequired()
+                                .HasMaxLength(320)
+                                .HasColumnType("character varying(320)")
+                                .HasColumnName("normalized_email");
+                        });
+
+                    b.ComplexProperty(typeof(Dictionary<string, object>), "Name", "MediSearch.Core.Domain.Companies.Company.Name#CompanyName", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<string>("Normalized")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("normalized_name");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("name");
+                        });
+
                     b.HasKey("Id")
                         .HasName("pk_companies");
 
                     b.HasIndex("CompanyTypeId")
                         .HasDatabaseName("ix_companies_company_type_id");
-
-                    b.HasIndex("Email")
-                        .IsUnique()
-                        .HasDatabaseName("ix_companies_email");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("ix_companies_name");
 
                     b.HasIndex("CompanyTypeId", "CreatedAt")
                         .HasDatabaseName("ix_companies_company_type_id_created_at");
@@ -980,12 +1015,6 @@ namespace MediSearch.Infrastructure.Persistence.Shared.Migrations
                         .HasColumnType("text")
                         .HasColumnName("created_by");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(320)
-                        .HasColumnType("character varying(320)")
-                        .HasColumnName("email");
-
                     b.Property<string>("ExternalId")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -1069,6 +1098,23 @@ namespace MediSearch.Infrastructure.Persistence.Shared.Migrations
                                 .HasColumnName("username");
                         });
 
+                    b.ComplexProperty(typeof(Dictionary<string, object>), "Email", "MediSearch.Core.Domain.Users.User.Email#Email", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<string>("Address")
+                                .IsRequired()
+                                .HasMaxLength(320)
+                                .HasColumnType("character varying(320)")
+                                .HasColumnName("email");
+
+                            b1.Property<string>("Normalized")
+                                .IsRequired()
+                                .HasMaxLength(320)
+                                .HasColumnType("character varying(320)")
+                                .HasColumnName("normalized_email");
+                        });
+
                     b.HasKey("Id")
                         .HasName("pk_users");
 
@@ -1076,182 +1122,11 @@ namespace MediSearch.Infrastructure.Persistence.Shared.Migrations
                         .HasDatabaseName("ix_users_company_id")
                         .HasFilter("company_id IS NOT NULL");
 
-                    b.HasIndex("Email")
-                        .IsUnique()
-                        .HasDatabaseName("ix_users_email");
-
                     b.HasIndex("ExternalId")
                         .IsUnique()
                         .HasDatabaseName("ix_users_external_id");
 
-                    b.HasIndex("CompanyId", "Email")
-                        .HasDatabaseName("ix_users_company_id_email")
-                        .HasFilter("company_id IS NOT NULL");
-
                     b.ToTable("users", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text")
-                        .HasColumnName("id");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("integer")
-                        .HasColumnName("access_failed_count");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("text")
-                        .HasColumnName("concurrency_stamp");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("email");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean")
-                        .HasColumnName("email_confirmed");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("boolean")
-                        .HasColumnName("lockout_enabled");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("lockout_end");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("normalized_email");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("normalized_user_name");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("text")
-                        .HasColumnName("password_hash");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("text")
-                        .HasColumnName("phone_number");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("boolean")
-                        .HasColumnName("phone_number_confirmed");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("text")
-                        .HasColumnName("security_stamp");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("boolean")
-                        .HasColumnName("two_factor_enabled");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("user_name");
-
-                    b.HasKey("Id")
-                        .HasName("pk_asp_net_users");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex");
-
-                    b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("text")
-                        .HasColumnName("claim_type");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("text")
-                        .HasColumnName("claim_value");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_asp_net_user_claims");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_asp_net_user_claims_user_id");
-
-                    b.ToTable("AspNetUserClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("text")
-                        .HasColumnName("login_provider");
-
-                    b.Property<string>("ProviderKey")
-                        .HasColumnType("text")
-                        .HasColumnName("provider_key");
-
-                    b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("text")
-                        .HasColumnName("provider_display_name");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("LoginProvider", "ProviderKey")
-                        .HasName("pk_asp_net_user_logins");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_asp_net_user_logins_user_id");
-
-                    b.ToTable("AspNetUserLogins", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("text")
-                        .HasColumnName("user_id");
-
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("text")
-                        .HasColumnName("login_provider");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("text")
-                        .HasColumnName("value");
-
-                    b.HasKey("UserId", "LoginProvider", "Name")
-                        .HasName("pk_asp_net_user_tokens");
-
-                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("PermissionRole", b =>
@@ -1876,36 +1751,6 @@ namespace MediSearch.Infrastructure.Persistence.Shared.Migrations
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("fk_users_companies_company_id");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_asp_net_user_claims_asp_net_users_user_id");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_asp_net_user_logins_asp_net_users_user_id");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_asp_net_user_tokens_asp_net_users_user_id");
                 });
 
             modelBuilder.Entity("PermissionRole", b =>
