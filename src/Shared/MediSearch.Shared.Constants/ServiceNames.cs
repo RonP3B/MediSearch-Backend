@@ -8,4 +8,5 @@ public static class ServiceNames
     public const string RabbitMq = "RabbitMQ";
     public const string Redis = "Redis";
     public const string MailPit = "MailPit";
+    public const string Keycloak = "Keycloak";
 }

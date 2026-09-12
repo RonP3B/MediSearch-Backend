@@ -96,6 +96,10 @@
     <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.2.4" />
     <PackageVersion Include="Aspire.Hosting.Azure.AppContainers" Version="13.2.4" />
     <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.2.4" />
+    <PackageVersion
+      Include="Aspire.Hosting.Keycloak"
+      Version="13.2.4-preview.1.26224.4"
+    />
     <PackageVersion Include="Aspire.Hosting.Azure.Redis" Version="13.2.4" />
     <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.2.4" />
     <PackageVersion Include="Aspire.Hosting.Redis" Version="13.2.4" />
