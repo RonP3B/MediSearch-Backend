@@ -1,4 +1,4 @@
-﻿<!-- For more info on central package management go to https://devblogs.microsoft.com/nuget/introducing-central-package-management/ -->
+﻿﻿<!-- For more info on central package management go to https://devblogs.microsoft.com/nuget/introducing-central-package-management/ -->
 <Project>
   <PropertyGroup>
     <!-- ──────────────────────────────────────────────────────────────
@@ -115,5 +115,20 @@
     />
     <!-- ── File Storage ─────────────────────────────────────── -->
     <PackageVersion Include="AWSSDK.S3" Version="4.0.22.1" />
+    <!-- ── Transitive security pins ─────────────────────────────
+         These packages are not used directly. They are referenced
+         explicitly so that a patched version wins over the vulnerable
+         one a dependency would otherwise pull in.
+
+         MessagePack        <- StreamJsonRpc <- Aspire.Hosting.*
+                               2.5.192 has several advisories, fixed in 2.5.301.
+         Microsoft.OpenApi  <- Microsoft.AspNetCore.OpenApi
+                               2.0.0 has GHSA-v5pm-xwqc-g5wc, fixed in 2.7.5.
+                               Microsoft.AspNetCore.OpenApi accepts [2.0.0, 3.0.0).
+
+         Drop each entry once the parent package ships a patched version.
+    ─────────────────────────────────────────────────────────── -->
+    <PackageVersion Include="MessagePack" Version="2.5.302" />
+    <PackageVersion Include="Microsoft.OpenApi" Version="2.7.5" />
   </ItemGroup>
 </Project>
