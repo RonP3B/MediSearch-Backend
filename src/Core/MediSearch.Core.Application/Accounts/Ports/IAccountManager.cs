@@ -9,6 +9,15 @@ public interface IAccountManager
         CancellationToken cancellationToken = default
     );
 
+    /// <summary>
+    /// Returns the identifier the external identity provider assigned to the account with
+    /// the given username, or <see langword="null"/> when no such account exists there.
+    /// </summary>
+    Task<string?> FindExternalUserIdByUsernameOrDefaultAsync(
+        string username,
+        CancellationToken cancellationToken = default
+    );
+
     Task<ServiceResult> DeleteUserAsync(string id, CancellationToken cancellationToken = default);
 
     Task<AccountEmailConfirmationTokenDto> GetEmailConfirmationTokenAsync(
