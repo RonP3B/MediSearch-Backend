@@ -9,12 +9,10 @@ using MediSearch.Core.Domain.Companies;
 using MediSearch.Core.Domain.Favorites.CompanyFavorites;
 using MediSearch.Core.Domain.Favorites.ProductFavorites;
 using MediSearch.Core.Domain.Users;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace MediSearch.Infrastructure.Persistence.Shared.Contexts;
 
-public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
-    : IdentityUserContext<IdentityUser>(options)
+public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public DbSet<User> DomainUsers => Set<User>();
     public DbSet<Company> Companies => Set<Company>();

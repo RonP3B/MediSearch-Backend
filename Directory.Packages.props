@@ -27,10 +27,6 @@
       Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore"
       Version="$(AspnetVersion)"
     />
-    <PackageVersion
-      Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore"
-      Version="$(AspnetVersion)"
-    />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(AspnetVersion)" />
     <!-- ── Entity Framework Core ───────────────────────────────── -->
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(EfcoreVersion)" />
