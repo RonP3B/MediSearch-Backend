@@ -2,6 +2,8 @@
 
 Database transactions do not automatically protect external side effects such as file storage or external identity users. MediSearch uses compensations to close that gap.
 
+The external identity provider is Keycloak, so "creating an external identity user" below means an HTTP call that creates an account in a Keycloak realm, and the matching compensation deletes it again. See [Keycloak Identity Provider](Keycloak-Identity-Provider.md).
+
 ## The Problem This Solves
 
 Consider a command that does all of this:

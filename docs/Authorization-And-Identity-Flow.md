@@ -22,6 +22,8 @@ The current authentication flow is:
 - `CurrentUser` reads the claims from `HttpContext.User`
 - application code consumes `ICurrentUser`
 
+The access and refresh tokens are issued by the application itself. Accounts and passwords, however, live in Keycloak rather than in the database: the application asks Keycloak to verify a password, then builds its own token from claims it reads out of PostgreSQL. See [Keycloak Identity Provider](Keycloak-Identity-Provider.md) for the whole picture.
+
 Important current-user data includes:
 
 - authenticated user id
@@ -105,6 +107,16 @@ Handlers still perform request-specific access validation such as:
 - "is the caller allowed to edit this specific comment?"
 
 Those checks usually throw `ForbiddenAccessException` when the caller is authenticated but out of scope.
+
+## Where Identity Data Lives
+
+It helps to keep three stores apart:
+
+- **Keycloak** owns the credential: username, email, whether the email is verified, and the password hash.
+- **PostgreSQL** owns everything the business cares about: the domain user, its company, its roles and the permissions behind them.
+- **The access token** carries a snapshot of the second one, plus `ExternalUserId`, which is the Keycloak account id.
+
+Roles and permissions were never part of the identity store and still are not. Swapping ASP.NET Core Identity for Keycloak changed nothing in this section of the system.
 
 ## Identity and Company Representation
 

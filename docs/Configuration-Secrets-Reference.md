@@ -11,6 +11,11 @@ These values are expected in:
 
 ```json
 {
+  "AccountTokens": {
+    "SecretKey": "",
+    "EmailConfirmationTokenLifetimeHours": 24,
+    "PasswordResetTokenLifetimeHours": 2
+  },
   "AllowedHosts": "*",
   "AppUrls": {
     "ApiBaseUrl": "",
@@ -32,6 +37,12 @@ These values are expected in:
   "EmailService": {
     "FromName": "MediSearch",
     "FromEmail": ""
+  },
+  "Keycloak": {
+    "Url": "",
+    "Realm": "medisearch",
+    "ClientId": "medisearch-api",
+    "ClientSecret": ""
   },
   "MessageBus": {
     "PrefetchCount": 16,
@@ -64,11 +75,16 @@ These values are expected in user secrets for the Web API project:
     "AccessTokenExpirationMinutes": 0,
     "RefreshTokenExpirationDays": 0
   },
+  "AccountTokens": {
+    "SecretKey": ""
+  },
   "EmailService": {
     "ApiKey": ""
   }
 }
 ```
+
+`AccountTokens:SecretKey` signs the email confirmation and password reset tokens. It is deliberately separate from the two `JWT` secrets, and it must be at least 32 characters because it is used with HMAC-SHA256.
 
 ## What Is Actually Needed for Local Development
 
@@ -76,6 +92,8 @@ When running the solution through the Aspire AppHost in development:
 
 - `AdminPassword` is required
 - the full `JWT` section is required
+- `AccountTokens:SecretKey` is required
+- the `Keycloak` section is required, but development values are already in place (see below)
 - `EmailService.ApiKey` is not used because development email goes through MailPit over SMTP
 - connection strings are injected automatically by Aspire
 
@@ -91,15 +109,40 @@ When you run through Aspire:
 - RabbitMQ
 - Redis
 - MailPit
+- Keycloak
 
 are provisioned and injected automatically, so those fallback values are ignored.
+
+## Keycloak Settings
+
+The `Keycloak` section tells the Web API which realm holds the accounts and how to authenticate to it.
+
+| Key | Where it comes from in development |
+| --- | --- |
+| `Keycloak:Url` | Injected by the Aspire AppHost as the `Keycloak__Url` environment variable. `appsettings.Development.json` holds `http://localhost:8080` as the fallback for running the Web API alone. |
+| `Keycloak:Realm` | `appsettings.json` - `medisearch`, created by the realm import file. |
+| `Keycloak:ClientId` | `appsettings.json` - `medisearch-api`, created by the realm import file. |
+| `Keycloak:ClientSecret` | `appsettings.Development.json` - a development-only value that must match `src/Hosting/MediSearch.Hosting.AppHost/Realms/medisearch-realm.json`. Outside development, put it in user secrets or Key Vault. |
+
+The AppHost itself reads two parameters for the Keycloak admin console, defaulted in `src/Hosting/MediSearch.Hosting.AppHost/appsettings.Development.json`:
+
+```json
+{
+  "Parameters": {
+    "keycloak-admin-username": "admin",
+    "keycloak-admin-password": "admin"
+  }
+}
+```
+
+Full background is in [Keycloak Identity Provider](Keycloak-Identity-Provider.md).
 
 ## Database Initialization Notes
 
 In development, the Web API:
 
 - applies EF Core migrations on startup
-- ensures the system administrator exists
+- ensures the system administrator exists, both as a Keycloak account and as a domain user row
 
 The seeded administrator username is:
 
