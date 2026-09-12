@@ -33,7 +33,7 @@ internal sealed class ProductRepository(AppDbContext dbContext) : IProductReposi
     )
     {
         return await dbContext.Products.AnyAsync(
-            p => p.CompanyId == companyId && p.Name == name,
+            p => p.CompanyId == companyId && p.Name.Normalized == name.Normalized,
             cancellationToken
         );
     }
@@ -46,7 +46,9 @@ internal sealed class ProductRepository(AppDbContext dbContext) : IProductReposi
     )
     {
         return await dbContext.Products.AnyAsync(
-            p => p.CompanyId == companyId && p.Name == name && p.Id != excludeId,
+            p => p.CompanyId == companyId
+                && p.Name.Normalized == name.Normalized
+                && p.Id != excludeId,
             cancellationToken
         );
     }

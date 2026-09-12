@@ -20,7 +20,19 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .HasConversion(new ExternalIdValueConverter())
             .HasMaxLength(200);
 
-        builder.Property(u => u.Email).HasConversion(new EmailValueConverter()).HasMaxLength(320);
+        builder.ComplexProperty(
+            u => u.Email,
+            email =>
+            {
+                email.Property(p => p.Address)
+                    .HasColumnName("email")
+                    .HasMaxLength(320);
+
+                email.Property(p => p.Normalized)
+                    .HasColumnName("normalized_email")
+                    .HasMaxLength(320);
+            }
+        );
 
         builder
             .Property(u => u.PhoneNumber)
@@ -71,9 +83,10 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasKey(u => u.Id);
 
         builder.HasIndex(u => u.CompanyId).HasFilter("company_id IS NOT NULL");
-        builder.HasIndex(u => new { u.CompanyId, u.Email }).HasFilter("company_id IS NOT NULL");
         builder.HasIndex(u => u.ExternalId).IsUnique();
-        builder.HasIndex(u => u.Email).IsUnique();
+
+        // Indexes over the normalized columns of Username and Email are created by hand in a
+        // migration: EF cannot build an index over a complex property's member.
 
         builder
             .HasOne<Company>()

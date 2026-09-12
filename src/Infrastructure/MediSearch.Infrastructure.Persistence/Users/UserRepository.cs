@@ -42,7 +42,10 @@ internal sealed class UserRepository(AppDbContext dbContext) : IUserRepository
         CancellationToken cancellationToken = default
     )
     {
-        return await dbContext.DomainUsers.AnyAsync(u => u.Email == email, cancellationToken);
+        return await dbContext.DomainUsers.AnyAsync(
+            u => u.Email.Normalized == email.Normalized,
+            cancellationToken
+        );
     }
 
     public async Task<bool> IsUsernameTakenAsync(
