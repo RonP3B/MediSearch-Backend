@@ -87,23 +87,23 @@ This is why some validators validate the whole command object rather than a sing
 
 ## Normalized Values
 
-Some values must compare case-insensitively — two usernames, company names or emails that differ only in casing are the same value and must not both exist.
+Some values must compare case-insensitively. Two usernames, company names, or emails that differ only in casing are the same value and must not both exist.
 
-The wrong way to get that is to lower-case the value on the way in. It works for uniqueness, and it silently destroys what the user typed: a company called "MediSearch Labs" comes back out of the database as "medisearch labs" and is rendered that way everywhere.
+Lower-casing the value on the way in satisfies uniqueness and destroys the original input. A company named "MediSearch Labs" is then stored and rendered everywhere as "medisearch labs".
 
-So a value object that needs case-insensitive comparison keeps both forms:
+A value object that needs case-insensitive comparison therefore keeps both forms:
 
-- `Value` (or `Address`, for `Email`) holds exactly what the user typed, trimmed
+- `Value`, or `Address` on `Email`, holds the trimmed input as typed
 - `Normalized` holds the lower-cased form
-- `GetEqualityComponents()` yields `Normalized`, so equality is case-insensitive
+- `GetEqualityComponents()` yields `Normalized`, so equality ignores casing
 
-The value objects that currently do this are `Username`, `Email`, `CompanyName`, `ProductName`, and the product classification `Name`.
+The value objects that do this are `Username`, `Email`, `CompanyName`, `ProductName`, and the product classification `Name`.
 
-A value object with **no** uniqueness rule does not get a `Normalized`, and it must not lower-case anything either — `FullName` and `CompanyCeoName` are display-only and keep the user's casing as-is.
+A value object with no uniqueness rule does not get a `Normalized` and does not lower-case anything. `FullName` and `CompanyCeoName` are display-only and keep the casing they were given.
 
-### How they are mapped
+### Mapping
 
-A normalized value object maps to two columns through a complex property, not a value converter:
+A normalized value object maps to two columns through a complex property rather than a value converter:
 
 ```csharp
 builder.ComplexProperty(
@@ -116,11 +116,11 @@ builder.ComplexProperty(
 );
 ```
 
-### How they are indexed
+### Indexing
 
-EF Core cannot build an index over a member of a complex property, so the unique index on the normalized column is **created by hand in a migration**, and the entity configuration carries a comment saying so. `ix_users_normalized_username` was the first of these; the rest were added alongside it.
+EF Core cannot build an index over a member of a complex property. The unique index on the normalized column is therefore created by hand in a migration, and the entity configuration carries a comment saying where it went. `ix_users_normalized_username` was the first of these.
 
-Uniqueness checks in repositories must compare the normalized forms, not the value objects:
+Uniqueness checks in repositories compare the normalized forms rather than the value objects:
 
 ```csharp
 return await dbContext.Companies.AnyAsync(
@@ -129,7 +129,7 @@ return await dbContext.Companies.AnyAsync(
 );
 ```
 
-Read-side SQL follows the same split: filter and sort on `normalized_*`, select the original column for display.
+Read-side SQL follows the same split. Filtering and sorting use `normalized_*`; the original column is selected for display.
 
 ## Why `DependentRules(...)` Matters
 

@@ -1,279 +1,240 @@
 # Keycloak Identity Provider
 
-MediSearch stores accounts and passwords in [Keycloak](https://www.keycloak.org/) instead of the ASP.NET Core Identity tables it used before.
+This document describes how MediSearch uses Keycloak:
 
-This doc assumes you have never used Keycloak. It explains the product first, then exactly how MediSearch uses it, then how to run and troubleshoot it.
+- what Keycloak owns and what the application still owns
+- how each account flow works against it
+- how the realm is provisioned and why it is configured the way it is
 
-## What Changed, In One Paragraph
+## Overview
 
-Nothing above the infrastructure layer changed. The API still issues its own JWTs, still owns the login and refresh endpoints, still sends its own emails from its own Razor templates, and still keeps roles and permissions in PostgreSQL. The only thing that moved is where usernames, emails and password hashes live: they used to be rows in `AspNetUsers`, and now they are accounts inside a Keycloak realm. `UserManager<IdentityUser>` was replaced by HTTP calls to Keycloak's Admin REST API.
+Accounts and credentials live in a Keycloak realm instead of the ASP.NET Core Identity tables.
 
-## Keycloak In One Page
+Keycloak owns:
 
-Keycloak is an open source identity and access management server. You run it as a container, it stores its own data (users, credentials, configuration) in its own database, and you talk to it over HTTP.
+- the username, the email, and whether the email is verified
+- the password hash and the password policy
+- brute-force protection on repeated failed attempts
 
-The concepts you need for this project:
+The application still owns:
 
-- **Server**  
-  One Keycloak process. It has an **admin console** (a web UI) and a set of REST APIs.
+- the access and refresh tokens returned to clients
+- roles, permissions, and every business fact about a user
+- the login and account endpoints
+- the account emails and their templates
 
-- **Realm**  
-  An isolated tenant inside the server: its own users, its own clients, its own settings, its own signing keys. MediSearch uses a realm named `medisearch`. The built-in `master` realm is only for administering the server itself — never put application users there.
+The boundary itself did not move. `users.external_id` still points at the account in the external identity system. It now holds a Keycloak user id instead of an `AspNetUsers` id.
 
-- **Client**  
-  An application that is allowed to talk to a realm. A *public* client (a SPA, a mobile app) cannot keep a secret. A *confidential* client can, because it runs on a server. MediSearch registers one confidential client, `medisearch-api`, which is the Web API itself.
+## Keycloak Concepts Used Here
 
-- **Client secret**  
-  The password of a confidential client. The Web API sends it whenever it authenticates to Keycloak.
+Realm:
 
-- **Service account**  
-  A confidential client can have its own machine user. Turning on service accounts gives the client an identity it can log in as, without any human being involved. That is how the Web API gets permission to manage users.
+- an isolated tenant inside the Keycloak server, with its own users, clients, settings, and signing keys
+- MediSearch uses the `medisearch` realm
+- the built-in `master` realm exists only to administer the server and holds no application users
 
-- **Realm roles vs client roles**  
-  Roles defined at realm level apply to the realm; client roles belong to a specific client. Keycloak ships a built-in client called `realm-management` whose client roles (`manage-users`, `view-users`, …) are the permissions for the Admin REST API. MediSearch grants `manage-users` and `view-users` to its service account and nothing else.
+Client:
 
-- **Token endpoint and grants**  
-  `POST /realms/{realm}/protocol/openid-connect/token` is where you exchange credentials for tokens. A *grant* is the kind of exchange:
-  - `client_credentials` — "here is my client id and secret, give me a token for my service account". The Web API uses this to call the Admin REST API.
-  - `password` (also called *direct access grant*) — "here is a username and password, give me a token for that user". The Web API uses this **only as a password check**; the tokens that come back are thrown away.
+- an application allowed to talk to a realm
+- `medisearch-api` is a confidential client: it holds a secret and authenticates as itself
 
-- **Admin REST API**  
-  `/admin/realms/{realm}/...` — create, read, update and delete users, reset passwords, read credential metadata. Every call needs a bearer token from the service account.
+Service account:
 
-- **Realm import**  
-  Keycloak can create a whole realm from a JSON file on first start. That is how this repo ships a ready-to-run realm instead of asking you to click through the admin console.
+- a machine identity attached to a confidential client
+- it authorizes the Admin REST API calls and carries only `manage-users` and `view-users`
 
-## What MediSearch Uses Keycloak For — And What It Does Not
+Grants:
 
-Used for:
+- `client_credentials` authenticates the Web API itself
+- `password`, the direct access grant, is the only supported way to ask Keycloak whether a password is correct
 
-- storing the account: username, email, "is the email verified", "is the account enabled"
-- storing and verifying the password, including the password policy
-- brute-force protection on repeated failed password attempts
+Realm import:
 
-**Not** used for:
+- a realm export Keycloak applies when the realm does not already exist
+- `Realms/medisearch-realm.json` creates the realm, the client, and the service-account roles
 
-- issuing the tokens the API returns to clients. Those are still signed by `AuthenticationJwtService` with the secrets in the `JWT` configuration section.
-- roles and permissions. Those stay in the `roles`, `user_roles`, `permissions` and `role_permissions` tables and are still resolved by `IPermissionService`.
-- the login UI. There is no redirect to a Keycloak login page; clients keep posting to the API's own `/login` endpoint.
-- sending emails. Keycloak can send its own confirmation and reset emails, but that would mean giving up the project's Razor templates, localization and MailPit/Resend pipeline, so the API keeps sending them.
+## The Port Boundary
 
-That combination is deliberate. Keycloak is the credential store; the application is still the authority on identity, business roles and messaging.
+`KeycloakAccountService` implements the same three application ports the ASP.NET Core Identity adapter implemented:
 
-## The Domain Boundary
+- `ICredentialsValidator` for login
+- `IAccountManager` for registration, deletion, and email confirmation
+- `IAccountPasswordManager` for password reset and change
 
-The domain `users` table already had an `external_id` column pointing at the account in the external identity system. That has not changed — only what it points at:
-
-| Before | After |
-| --- | --- |
-| `users.external_id` = `AspNetUsers.id` (a GUID string produced by Identity) | `users.external_id` = the Keycloak user id (a UUID string) |
-
-Everything that reads `external_id` — the account query services, `ICurrentUser.ExternalId`, the `ExternalUserId` claim, the email links — works unchanged. No domain code was touched.
+No command handler, DTO, validator, or endpoint changed. The single port change is one added method, `IAccountManager.FindExternalUserIdByUsernameOrDefaultAsync`, used by the database initialiser to decide whether the seeded administrator already exists.
 
 ## Where The Code Lives
 
-Everything is inside `src/Infrastructure/MediSearch.Infrastructure.Security/Authentication`:
+Everything sits in `src/Infrastructure/MediSearch.Infrastructure.Security/Authentication`:
 
 ```
 Authentication/
 ├── AccountTokens/
 │   ├── AccountActionPurposes.cs        purposes an email token can be issued for
-│   ├── AccountActionTokenService.cs    issues/validates confirmation and reset tokens
-│   └── AccountTokenOptions.cs          secret + lifetimes for those tokens
-├── Jwt/                                unchanged: the access/refresh tokens the API returns
+│   ├── AccountActionTokenService.cs    issues and validates those tokens
+│   └── AccountTokenOptions.cs          secret and lifetimes
+├── Jwt/                                unchanged: the tokens the API returns
 ├── Keycloak/
-│   ├── Contracts/                      the request/response shapes of the Keycloak API
-│   ├── KeycloakAccountService.cs       implements the three application ports
+│   ├── Contracts/                      request and response shapes
+│   ├── KeycloakAccountService.cs       implements the three ports
 │   ├── KeycloakAdminApiClient.cs       user CRUD over the Admin REST API
 │   ├── KeycloakAdminTokenProvider.cs   caches the service-account token
-│   ├── KeycloakTokenClient.cs          token endpoint: client credentials + password grant
-│   ├── KeycloakErrorCodeMap.cs         Keycloak failure -> application error code
-│   ├── KeycloakErrorTranslator.cs      error code -> (ErrorKey, ErrorCode) pair
+│   ├── KeycloakTokenClient.cs          client-credentials and password grants
+│   ├── KeycloakErrorCodeMap.cs         Keycloak failure to application error code
+│   ├── KeycloakErrorTranslator.cs      error code to (ErrorKey, ErrorCode)
 │   └── KeycloakOptions.cs              url, realm, client id, client secret
 └── DependencyInjection.Authentication.cs
 ```
 
-`KeycloakAccountService` implements the same three ports the Identity adapter implemented, so the application layer never learns that anything changed:
+## Registration
 
-- `ICredentialsValidator` — login
-- `IAccountManager` — register, delete, email confirmation
-- `IAccountPasswordManager` — reset and change password
+`RegisterUserAsync` posts the account to `/admin/realms/{realm}/users` with the password as a non-temporary credential. Keycloak answers `201 Created`, and the new user id is the last segment of the `Location` header. That id becomes `users.external_id`.
 
-The only port change in the whole migration is one added method, `IAccountManager.FindExternalUserIdByUsernameOrDefaultAsync`, used by the database initialiser to check whether the seeded administrator already exists in Keycloak.
+The account is created enabled even when the email is not yet verified. The password grant must succeed before confirmation so that credential validation can distinguish a wrong password from an unconfirmed email, which is what `IdentityUser.EmailConfirmed` allowed before.
 
-## How Each Flow Works Now
+The phone number is not copied into Keycloak. It was only ever written to `IdentityUser.PhoneNumber` and never read back; the domain `users` table holds the real value.
 
-### Registration
+Registration runs through the compensation manager, so a failure after the account exists publishes the compensation that deletes it. See [Compensations And External Consistency](Compensations-And-External-Consistency.md).
 
-1. A command handler calls `IAccountManager.RegisterUserAsync` through the compensation manager.
-2. `POST /admin/realms/medisearch/users` creates the account with `enabled: true` and `emailVerified` set from `IsActive`, plus the password as a non-temporary credential.
-3. Keycloak answers `201 Created` with a `Location` header; the new user id is its last segment, and that id becomes `users.external_id`.
-4. If the surrounding transaction fails, the existing compensation event calls `DeleteUserAsync`, which issues `DELETE /admin/realms/medisearch/users/{id}`.
+## Credential Validation
 
-The account is created **enabled even when the email is not verified**. That is on purpose: the password grant has to succeed so the API can tell "wrong password" apart from "email not confirmed", exactly like `IdentityUser.EmailConfirmed` allowed before.
+`ValidateCredentialsAsync`:
 
-The phone number is not copied into Keycloak. It was only ever written to `IdentityUser.PhoneNumber` and never read back; the real value lives in the domain `users` table.
+1. looks the account up by exact username through the Admin REST API
+2. posts a `password` grant to the token endpoint
+3. returns `AccountEmailNotConfirmed` when the account exists and the password is right but the email is not verified
 
-### Login
+The tokens Keycloak returns are discarded. They exist only to prove the password was accepted, and each successful check opens a short Keycloak session that expires on its own.
 
-1. `LoginCommandHandler` loads the user's claims from PostgreSQL (unchanged).
-2. `ValidateCredentialsAsync` looks the account up by exact username through the Admin API.
-3. It posts a `password` grant to the token endpoint. Success means the password is right; the returned Keycloak tokens are discarded.
-4. If the account's email is not verified, it returns `AccountEmailNotConfirmed`, same as before.
-5. The handler then mints the application's own access and refresh tokens.
+Anything that is not a credential rejection is raised as an exception rather than reported as a wrong password, so an unreachable or misconfigured Keycloak never surfaces to the caller as invalid credentials.
 
-Note that the password grant creates a short Keycloak session per successful check. Those sessions expire on their own (30 minutes idle in the shipped realm) and are not used for anything.
+## Email Confirmation And Password Reset
 
-### Refresh
+Keycloak exposes no API that returns a confirmation or reset token. It can only send its own email, which would mean giving up the project's Razor templates, localization, and the MailPit/Resend pipeline. The application therefore signs its own tokens in `AccountActionTokenService`:
 
-Completely untouched. Refresh tokens are signed and validated by the application, and the claims are rebuilt from PostgreSQL.
+- a small JWT signed with `AccountTokens:SecretKey`, separate from the login secrets
+- carrying the account id, a `purpose` claim, and an expiry
+- base64url encoded, so it drops into the existing email links unchanged
 
-### Email confirmation and password reset
+The `purpose` claim is what prevents a confirmation link from being replayed as a reset link.
 
-Keycloak has no API that gives you a confirmation or reset token — it can only send its own email. So the API issues these tokens itself, in `AccountActionTokenService`:
+Single use is handled differently for the two flows:
 
-- a small JWT signed with the `AccountTokens:SecretKey` secret (separate from the login secrets)
-- carrying the account id (`sub`), a `purpose` claim, and an expiry
-- URL-safe, so it drops straight into the existing email links
+- a reset token embeds the password credential's `createdDate`, which Keycloak exposes and which changes on every reset. `ResetPasswordAsync` re-reads it before accepting the token, so older links stop working once the password actually changes. This replaces the ASP.NET Core Identity security stamp.
+- a confirmation token needs no stamp. After a successful confirmation `emailVerified` is `true`, and a replay returns `AccountEmailAlreadyConfirmed`.
 
-The `purpose` claim is what stops a confirmation link from being replayed as a reset link.
+Confirming an email is a full user update with `emailVerified` set. Partial updates are not safe: since the declarative user profile became mandatory, fields missing from the representation can be cleared rather than left alone.
 
-Making a reset link **single use** needed one more ingredient. ASP.NET Core Identity used the user's security stamp, which changed whenever the password changed. Keycloak never exposes password hashes, but `GET /admin/realms/{realm}/users/{id}/credentials` does return the password credential's `createdDate`, and that timestamp changes on every reset. The reset token embeds it, and `ResetPasswordAsync` re-reads it before accepting the token — so once a password has actually been changed, older reset links stop working.
+## Change Password
 
-Email confirmation links need no stamp: after a successful confirmation `emailVerified` is `true`, and a replay returns `AccountEmailAlreadyConfirmed` just like before.
+Keycloak has no endpoint that changes a password using the current one. `ChangePasswordAsync` verifies the current password through the password grant, then sets the new one through `reset-password`. A failed verification returns `PasswordMismatch`, the same code ASP.NET Core Identity returned.
 
-Confirming an email is `PUT /admin/realms/{realm}/users/{id}` with `{ "emailVerified": true }`. Resetting a password is `PUT .../users/{id}/reset-password`.
+Because the verification is a real login attempt, repeated wrong current passwords count toward brute-force protection.
 
-### Change password
+## Administrator Seeding
 
-Keycloak has no "change password using the current one" endpoint. `ChangePasswordAsync` therefore:
+`AppDbContextInitialiser` asks Keycloak whether an account named `administrator` exists, creates it from the `AdminPassword` setting if not, and then ensures the matching domain user row. Both stores are persistent, so the check runs safely on every startup.
 
-1. loads the account to get its username
-2. verifies the current password with a `password` grant — a failure returns `PasswordMismatch`, the same code Identity returned
-3. sets the new password through `reset-password`
+## Token Vocabulary
 
-Because step 2 is a real login attempt, repeated wrong current passwords count toward brute-force protection.
+Four different things in this system are called a token:
 
-### Administrator seeding
+- the access token, signed by the API with `JWT:AccessTokenSecretKey`, used for bearer authentication
+- the refresh token, signed by the API with `JWT:RefreshTokenSecretKey`
+- the account action token, signed by the API with `AccountTokens:SecretKey`, carried in confirmation and reset links
+- Keycloak's own tokens, which never leave the infrastructure layer
 
-`AppDbContextInitialiser` no longer touches `UserManager`. It asks Keycloak whether an account named `administrator` exists, creates it if not (using the `AdminPassword` setting), and then makes sure the matching domain user row exists. Because both Keycloak and PostgreSQL keep their data in persistent volumes, this is safe to run on every startup.
+## Error Translation
 
-## The Two Families Of Tokens
+`IdentityResult.Errors` produced a predictable list of codes. Keycloak is less consistent: some endpoints answer with a message key such as `invalidPasswordMinLengthMessage`, others with English text such as `User exists with same username`.
 
-It is worth being explicit, because three different things in this system are called "token":
+`KeycloakErrorCodeMap` handles both, message keys first and text fragments as a fallback, and maps them onto the existing `AccountErrorCodes`. API responses therefore keep the same codes and the same localized messages. `KeycloakErrorTranslator` then derives the error key from the mapped code.
 
-| Token | Signed by | Secret | Used for |
-| --- | --- | --- | --- |
-| Access token | The API | `JWT:AccessTokenSecretKey` | Bearer auth on every request |
-| Refresh token | The API | `JWT:RefreshTokenSecretKey` | Getting a new access token |
-| Account action token | The API | `AccountTokens:SecretKey` | Email confirmation and password reset links |
-| Keycloak tokens | Keycloak | Keycloak's realm keys | Internal only: calling the Admin API, and checking a password |
+One behaviour changed: unrecognized failures were previously reported under the key `IdentityResult` and are now reported under `Account`, with the same `UnknownAccountError` code.
 
-Keycloak-issued tokens never leave the infrastructure layer.
+## Realm Configuration
 
-## Error Mapping
+The realm import encodes the following decisions:
 
-`IdentityResult.Errors` used to give a tidy list of codes. Keycloak is less consistent: some endpoints answer with a message key such as `invalidPasswordMinLengthMessage`, others with English text such as `User exists with same username`.
+- `registrationAllowed`, `resetPasswordAllowed`, `editUsernameAllowed`, and `rememberMe` are off, because the application owns every account flow
+- `verifyEmail` is off, because Keycloak would otherwise attach a `VERIFY_EMAIL` required action that breaks the password grant
+- `loginWithEmailAllowed` is off, so credentials are always checked by username, matching the previous `FindByNameAsync` behaviour
+- `duplicateEmailsAllowed` is off, which keeps the `DuplicateEmail` error meaningful
+- the password policy mirrors `SharedValidationExtensions.Password()`, so Keycloak rejects what the application validators reject
+- `bruteForceProtected` is on, with temporary lockout
+- `firstName` and `lastName` are not required in the user profile. Keycloak marks them required by default, the application keeps names in the domain `users` table and never sends them, and the mismatch makes every password grant fail with `Account is not fully set up`
+- the client has direct access grants and service accounts enabled and standard flow disabled, because the API never performs a browser login
 
-`KeycloakErrorCodeMap` handles both — message keys first, then text fragments — and maps them onto the existing `AccountErrorCodes`, so API responses keep the same codes and the same localized messages. `KeycloakErrorTranslator` then derives the error key (`Password`, `Email`, `Username`, `Token`, `Account`) from the mapped code.
+## Local Development
 
-One small difference: unrecognized failures used to be reported under the key `IdentityResult`. They are now reported under `Account`, with the same `UnknownAccountError` code.
-
-## Configuration
-
-Two new sections. See [Configuration And Secrets Reference](Configuration-Secrets-Reference.md) for the full picture.
-
-```json
-{
-  "AccountTokens": {
-    "SecretKey": "",
-    "EmailConfirmationTokenLifetimeHours": 24,
-    "PasswordResetTokenLifetimeHours": 2
-  },
-  "Keycloak": {
-    "Url": "",
-    "Realm": "medisearch",
-    "ClientId": "medisearch-api",
-    "ClientSecret": ""
-  }
-}
-```
-
-- `AccountTokens:SecretKey` is a real secret and belongs in user secrets. It must be at least 32 characters, because it signs with HMAC-SHA256.
-- `Keycloak:Url` is injected by the Aspire AppHost as the `Keycloak__Url` environment variable. The value in `appsettings.Development.json` is only the fallback for running the Web API without the AppHost.
-- `Keycloak:ClientSecret` has a development value in `appsettings.Development.json` that matches the realm import file. Outside development it belongs in user secrets or Key Vault.
-
-Startup fails fast with an explicit message if any of these is missing.
-
-## Running It Locally
-
-`dotnet run --project src/Hosting/MediSearch.Hosting.AppHost` now also starts a Keycloak container:
+The Aspire AppHost starts Keycloak alongside the other infrastructure:
 
 - image `quay.io/keycloak/keycloak:26.7.3`
 - fixed port `8080`, so the admin console is always at <http://localhost:8080>
-- a persistent data volume, so accounts survive restarts
-- `ContainerLifetime.Persistent`, like the other infrastructure containers
+- a persistent data volume and `ContainerLifetime.Persistent`
 - the realm imported from `src/Hosting/MediSearch.Hosting.AppHost/Realms/medisearch-realm.json`
 
-Admin console credentials come from the AppHost parameters in `appsettings.Development.json` (`admin` / `admin` by default). Sign in, switch the realm selector from `master` to `medisearch`, and you can browse **Users**, **Clients** and **Realm settings**.
+Admin console credentials come from the AppHost parameters in its `appsettings.Development.json`.
 
-Useful places in the console:
+The console shows one realm at a time and opens on `master`. Application users are under `medisearch`, reachable through the realm selector. Service accounts are hidden from the user list by default.
 
-- **Users** — every registered account. The **Credentials** tab can reset a password; the **Details** tab shows *Email verified*.
-- **Clients → medisearch-api → Credentials** — the client secret.
-- **Clients → medisearch-api → Service accounts roles** — the `realm-management` roles the API was granted.
-- **Realm settings → Sessions / Security defenses** — session lifetimes and brute-force settings.
+## Realm Import Is Applied Once
 
-### The realm import only runs once
+Keycloak imports a realm only when it does not already exist. Because the data volume is persistent, editing `medisearch-realm.json` after the first run has no effect.
 
-Keycloak imports a realm when it does not already exist. Because the data volume is persistent, editing `medisearch-realm.json` after the first run changes nothing. To pick up changes, either apply them by hand in the admin console, or delete the Keycloak volume and let Aspire recreate it (which also deletes every local account, so the domain `users` rows will point at ids that no longer exist — clear the database too).
-
-## What The Realm File Configures, And Why
-
-| Setting | Value | Why |
-| --- | --- | --- |
-| `registrationAllowed`, `resetPasswordAllowed`, `editUsernameAllowed`, `rememberMe` | `false` | The API owns every account flow; Keycloak's self-service pages stay closed. |
-| `verifyEmail` | `false` | Otherwise Keycloak adds a `VERIFY_EMAIL` required action that breaks the password grant. The API decides what "confirmed" means. |
-| `loginWithEmailAllowed` | `false` | Credentials are always checked by username, matching the old `FindByNameAsync` behaviour. |
-| `duplicateEmailsAllowed` | `false` | Keeps the `DuplicateEmail` error working. |
-| `passwordPolicy` | length 8–128, upper, lower, digit, special | Mirrors `SharedValidationExtensions.Password()` so Keycloak rejects what the validators reject. |
-| `bruteForceProtected` | `true` | Temporary lockout after 30 failures. |
-| user profile: `firstName` / `lastName` | not required | MediSearch keeps names in the domain `users` table and never sends them to Keycloak. Keycloak's default profile marks them required, which leaves every account "incomplete" and makes the password grant fail with *Account is not fully set up*, no matter how correct the password is. |
-| `medisearch-api` client | confidential, direct access grants + service accounts on, standard flow off | The API needs exactly two things: a machine identity for the Admin API and the ability to check a password. It never performs a browser login. |
-| service account roles | `manage-users`, `view-users` | Least privilege for the Admin REST API. |
-
-## Production Checklist
-
-The shipped realm is tuned for local development. Before running this anywhere real:
-
-- generate a new client secret and store it in Key Vault or user secrets, never in `appsettings.Development.json`
-- generate a strong `AccountTokens:SecretKey`
-- change the Keycloak admin credentials from `admin` / `admin`
-- run Keycloak behind HTTPS and set `sslRequired` to `all`
-- give Keycloak a real database instead of the dev-mode file store, and back it up — it is now the system of record for credentials
-- review the brute-force and session settings for your traffic
+To pick up a change, either apply it by hand in the admin console, or delete the Keycloak volume and let Aspire recreate it. Deleting the volume also deletes every local account, which leaves `users.external_id` pointing at ids that no longer exist, so the database has to be recreated as well.
 
 ## Migrating Existing Accounts
 
-Password hashes cannot be moved from ASP.NET Core Identity to Keycloak: the formats are different and hashes cannot be converted. For an existing database you have two realistic options:
+Password hashes cannot be moved from ASP.NET Core Identity to Keycloak. The formats differ and hashes cannot be converted.
 
-1. **Re-create accounts and force a reset.** Create a Keycloak user per `AspNetUsers` row, update `users.external_id` to the new Keycloak id, and send everyone a password reset email.
-2. **Hash-on-first-login.** Write a custom Keycloak credential provider that can verify the old Identity hash once and then re-hash with Keycloak's algorithm. More work, but invisible to users.
+For a database that already holds accounts there are two realistic options:
 
-The migration in this repository does neither — it drops the tables, on the assumption that the local database is disposable. Do not run it against production data without picking one of the strategies above first.
+- create a Keycloak user per `AspNetUsers` row, update `users.external_id`, and force a password reset for everyone
+- write a Keycloak credential provider that verifies the old hash once and re-hashes with Keycloak's algorithm
+
+The migration in this repository does neither. It drops the tables, on the assumption that the local database is disposable.
+
+## Production Checklist
+
+The shipped realm is tuned for local development. Before running it anywhere real:
+
+- generate a new client secret and keep it in a secret store
+- generate a strong `AccountTokens:SecretKey`
+- change the Keycloak admin credentials
+- run Keycloak behind HTTPS and set `sslRequired` to `all`
+- give Keycloak a real database rather than the dev-mode store, and back it up, because it is the system of record for credentials
+- review the brute-force and session settings
 
 ## Troubleshooting
 
-| Symptom | Likely cause |
-| --- | --- |
-| Startup throws `Configuration key 'Keycloak' is missing or empty` | The `Keycloak` section or one of its values is not set. |
-| Startup throws `Configuration key 'AccountTokens:SecretKey' is missing` | Add the secret to user secrets. |
-| `Keycloak rejected the credentials of client 'medisearch-api'` | `Keycloak:ClientSecret` does not match the secret in the realm. Check **Clients → medisearch-api → Credentials**. |
-| Admin API calls fail with 403 | The service account lost its `realm-management` roles. Check **Service accounts roles**. |
-| Every login fails with invalid credentials right after a reset | The realm was re-imported into a fresh volume while the database kept the old `external_id` values. |
-| Login fails for a user who exists, with no obvious reason | Brute-force lockout. Check **Users → the user → the lockout state**, or **Realm settings → Security defenses**. |
-| `unauthorized_client` when checking a password | *Direct access grants* got turned off on the client. |
-| Login always fails, and Keycloak's `error_description` says `Account is not fully set up` | The realm's user profile marks an attribute required that MediSearch never sends (typically `firstName` / `lastName`). Clear `required` on it under **Realm settings → User profile**. |
+`Configuration key 'Keycloak' is missing or empty`:
+
+- the section or one of its values is not set
+
+`Keycloak rejected the credentials of client 'medisearch-api'`:
+
+- `Keycloak:ClientSecret` does not match the secret in the realm
+
+Admin calls fail with 403:
+
+- the service account lost its `realm-management` roles
+
+Login always fails and Keycloak reports `Account is not fully set up`:
+
+- the user profile marks an attribute required that the application never sends, typically `firstName` or `lastName`
+
+Login fails with `unauthorized_client`:
+
+- direct access grants are disabled on the client
+
+Every login fails immediately after recreating the realm:
+
+- the realm was imported into a fresh volume while the database kept the old `external_id` values
+
+A user that exists cannot log in for no apparent reason:
+
+- brute-force lockout
 
 ## Related Docs
 

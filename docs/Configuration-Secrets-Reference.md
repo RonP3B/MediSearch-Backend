@@ -117,14 +117,14 @@ are provisioned and injected automatically, so those fallback values are ignored
 
 The `Keycloak` section tells the Web API which realm holds the accounts and how to authenticate to it.
 
-| Key | Where it comes from in development |
-| --- | --- |
-| `Keycloak:Url` | Injected by the Aspire AppHost as the `Keycloak__Url` environment variable. `appsettings.Development.json` holds `http://localhost:8080` as the fallback for running the Web API alone. |
-| `Keycloak:Realm` | `appsettings.json` - `medisearch`, created by the realm import file. |
-| `Keycloak:ClientId` | `appsettings.json` - `medisearch-api`, created by the realm import file. |
-| `Keycloak:ClientSecret` | `appsettings.Development.json` - a development-only value that must match `src/Hosting/MediSearch.Hosting.AppHost/Realms/medisearch-realm.json`. Outside development, put it in user secrets or Key Vault. |
+Where each value comes from in development:
 
-The AppHost itself reads two parameters for the Keycloak admin console, defaulted in `src/Hosting/MediSearch.Hosting.AppHost/appsettings.Development.json`:
+- `Keycloak:Url` is injected by the Aspire AppHost as the `Keycloak__Url` environment variable. The value in `appsettings.Development.json` is the fallback for running the Web API without the AppHost.
+- `Keycloak:Realm` is in `appsettings.json` and matches the realm created by the import file.
+- `Keycloak:ClientId` is in `appsettings.json` and matches the client created by the import file.
+- `Keycloak:ClientSecret` is in `appsettings.Development.json` and must match `src/Hosting/MediSearch.Hosting.AppHost/Realms/medisearch-realm.json`. Outside development it belongs in user secrets or Key Vault.
+
+The AppHost reads two parameters for the Keycloak admin console, defaulted in `src/Hosting/MediSearch.Hosting.AppHost/appsettings.Development.json`:
 
 ```json
 {
@@ -135,7 +135,7 @@ The AppHost itself reads two parameters for the Keycloak admin console, defaulte
 }
 ```
 
-Full background is in [Keycloak Identity Provider](Keycloak-Identity-Provider.md).
+Background is in [Keycloak Identity Provider](Keycloak-Identity-Provider.md).
 
 ## Database Initialization Notes
 

@@ -22,7 +22,7 @@ The current authentication flow is:
 - `CurrentUser` reads the claims from `HttpContext.User`
 - application code consumes `ICurrentUser`
 
-The access and refresh tokens are issued by the application itself. Accounts and passwords, however, live in Keycloak rather than in the database: the application asks Keycloak to verify a password, then builds its own token from claims it reads out of PostgreSQL. See [Keycloak Identity Provider](Keycloak-Identity-Provider.md) for the whole picture.
+The access and refresh tokens are issued by the application itself. Accounts and passwords live in Keycloak rather than in the database: the application asks Keycloak to verify a password, then builds its own token from claims read out of PostgreSQL. See [Keycloak Identity Provider](Keycloak-Identity-Provider.md).
 
 Important current-user data includes:
 
@@ -110,13 +110,22 @@ Those checks usually throw `ForbiddenAccessException` when the caller is authent
 
 ## Where Identity Data Lives
 
-It helps to keep three stores apart:
+Three stores hold different parts of it.
 
-- **Keycloak** owns the credential: username, email, whether the email is verified, and the password hash.
-- **PostgreSQL** owns everything the business cares about: the domain user, its company, its roles and the permissions behind them.
-- **The access token** carries a snapshot of the second one, plus `ExternalUserId`, which is the Keycloak account id.
+Keycloak holds the credential:
 
-Roles and permissions were never part of the identity store and still are not. Swapping ASP.NET Core Identity for Keycloak changed nothing in this section of the system.
+- username and email
+- whether the email is verified
+- the password hash
+
+PostgreSQL holds the business identity:
+
+- the domain user and its company
+- its roles, and the permissions behind them
+
+The access token carries a snapshot of the PostgreSQL side, plus `ExternalUserId`, which is the Keycloak account id.
+
+Roles and permissions were never part of the identity store and still are not. Replacing ASP.NET Core Identity with Keycloak changed nothing described in this document.
 
 ## Identity and Company Representation
 
